@@ -5,6 +5,7 @@ import FlashcardSpotlight from './FlashcardSpotlight'
 import NFTSpotlight from './NFTSpotlight'
 import EduChainSection from './EduChainSection'
 import Footer from './Footer'
+import SurveyPage from './SurveyPage'
 
 export {
     EcosystemOverview,
@@ -14,4 +15,5 @@ export {
     NFTSpotlight,
     EduChainSection,
     Footer,
+    SurveyPage,
 }

@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import {
   EcosystemOverview,
   HeroSection,
@@ -6,9 +7,10 @@ import {
   NFTSpotlight,
   EduChainSection,
   Footer,
+  SurveyPage,
 } from './components'
 
-function App() {
+function LandingPage() {
   return (
     <>
       <Navbar />
@@ -19,6 +21,17 @@ function App() {
       <EduChainSection />
       <Footer />
     </>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/survey/pengguna-airdrop" element={<SurveyPage />} />
+      </Routes>
+    </Router>
   )
 }
 
