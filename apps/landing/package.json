@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/mixpanel-browser": "^2.60.0",
     "mixpanel-browser": "^2.65.0",
+    "posthog-js": "^1.257.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",
