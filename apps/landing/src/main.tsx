@@ -9,9 +9,17 @@ const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN;
 
 if (MIXPANEL_TOKEN) {
   mixpanel.init(MIXPANEL_TOKEN, {
-    debug: true,
-    track_pageview: true,
-    persistence: 'localStorage'
+    debug: false,
+    track_pageview: 'full-url', // Better for SPAs - tracks URL changes
+    persistence: 'localStorage',
+    autocapture: {
+      pageview: 'full-url',
+      click: true,
+      input: true,
+      scroll: true,
+      submit: true,
+      capture_text_content: false
+    }
   });
 }
 
