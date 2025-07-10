@@ -1,13 +1,18 @@
-import CoinIcon from '../assets/coin.svg'
 import ClockIcon from '../assets/clock-three.svg'
 import UsdBadgeIcon from '../assets/usd-badge.svg'
 import GlobeIcon from '../assets/globe.svg'
+import SokushuuIcon from '../assets/sokushuu.svg'
 import FlashCard from './FlashCard'
 
 const HeroSection = () => {
     return <section className="min-h-screen flex items-center justify-center px-4 py-20">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
+                {/* Sokushuu Icon above headline */}
+                <div className="mb-6">
+                    <img className="w-16 h-16 mx-auto lg:mx-0" src={SokushuuIcon} alt="Sokushuu" />
+                </div>
+                
                 <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight text-zinc-800">
                     <span className="">
                         Farm knowledge
