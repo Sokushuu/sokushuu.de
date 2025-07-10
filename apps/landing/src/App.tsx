@@ -1,30 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { usePostHog } from 'posthog-js/react'
-import {
-  EcosystemOverview,
-  HeroSection,
-  Navbar,
-  FlashcardSpotlight,
-  NFTSpotlight,
-  EduChainSection,
-  Footer,
-  SurveyPage,
-} from './components'
-
-function LandingPage() {
-  return (
-    <>
-      <Navbar />
-      <HeroSection />
-      <EcosystemOverview />
-      <FlashcardSpotlight />
-      <NFTSpotlight />
-      <EduChainSection />
-      <Footer />
-    </>
-  )
-}
+import { SurveyPage } from './components'
+import { LandingPage } from './pages'
 
 // Component to track page views
 function PageViewTracker() {
