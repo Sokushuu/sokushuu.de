@@ -24,7 +24,6 @@ const HeroSection = () => {
                 <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight text-zinc-800">
                     <span className="">
                         Farm knowledge
-                        <div className="absolute -bottom-2 left-0 w-full h-1 bg-zinc-800"></div>
                     </span>
                     <br />
                     and earn USD as you learn.

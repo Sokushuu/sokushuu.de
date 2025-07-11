@@ -2,9 +2,9 @@ import {
   EcosystemOverview,
   HeroSection,
   Navbar,
-  FlashcardSpotlight,
-  NFTSpotlight,
-  EduChainSection,
+  HowItWorksSection,
+  CreatorSection,
+  FAQSection,
   Footer,
 } from '../components'
 
@@ -14,9 +14,9 @@ function LandingPage() {
       <Navbar />
       <HeroSection />
       <EcosystemOverview />
-      <FlashcardSpotlight />
-      <NFTSpotlight />
-      <EduChainSection />
+      <HowItWorksSection />
+      <CreatorSection />
+      <FAQSection />
       <Footer />
     </>
   )
