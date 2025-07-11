@@ -402,18 +402,6 @@ Learn crypto and earn rewards! 🚀`;
     setShowReward(false);
   };
 
-  const resetSession = () => {
-    setCurrentState('collection');
-    setSelectedAnswer(null);
-    setIsAnswered(false);
-    setCurrentQuestionIndex(0);
-    setCorrectAnswers(0);
-    setStartTime(0);
-    setCompletionTime(0);
-    setShowConfetti(false);
-    setShowReward(false);
-  };
-
   const handleCardFlip = () => {
     if (currentState === 'answered' && isAnswered) {
       setCurrentState('question');
