@@ -1,10 +1,18 @@
+import { useState } from 'react'
+
+import { InteractiveLearningCard } from './InteractiveLearningFlow'
+
 import ClockIcon from '../assets/clock-three.svg'
 import UsdBadgeIcon from '../assets/usd-badge.svg'
 import GlobeIcon from '../assets/globe.svg'
 import SokushuuIcon from '../assets/sokushuu.svg'
-import FlashCard from './FlashCard'
 
 const HeroSection = () => {
+    const [isLearningStarted, setIsLearningStarted] = useState(false);
+
+    const handleLearningStart = () => {
+        setIsLearningStarted(true);
+    };
     return <section className="min-h-screen flex items-center justify-center px-4 py-20">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
@@ -60,30 +68,13 @@ const HeroSection = () => {
             
             <div className="flex justify-center">
                 <div className="relative">
-                    <FlashCard
-                        front={
-                            <div className="space-y-4">
-                                <div className="text-2xl font-bold text-zinc-800">Complete this 3-min lesson</div>
-                                <div className="text-sm text-gray-500">Finance Basics • Beginner</div>
-                                <div className="flex items-center justify-center gap-2 text-green-600">
-                                    <img className="w-5 h-5" src={UsdBadgeIcon} alt="USD" />
-                                    <span className="font-bold">+$0.50 USD</span>
-                                </div>
-                            </div>
-                        }
-                        back={
-                            <div className="space-y-4">
-                                <div className="text-2xl font-bold text-green-400">Lesson Complete!</div>
-                                <div className="text-lg">+$0.50 USD earned</div>
-                                <div className="text-sm opacity-80">Ready for the next lesson?</div>
-                            </div>
-                        }
-                        className="w-80 h-64"
-                    />
+                    <InteractiveLearningCard onStartLearning={handleLearningStart} />
                     
-                    <div className="absolute -top-4 -right-4 bg-green-300 text-black px-3 py-1 rounded-full text-sm font-bold rotate-12 shadow-lg">
-                        Earn USD!
-                    </div>
+                    {!isLearningStarted && 
+                        <div className="absolute -top-4 -right-4 bg-green-300 text-black px-3 py-1 rounded-full text-sm font-bold rotate-12 shadow-lg animate-bounce">
+                            Try it now!
+                        </div>
+                    }
                 </div>
             </div>
         </div>
