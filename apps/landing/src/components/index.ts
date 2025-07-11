@@ -6,6 +6,9 @@ import NFTSpotlight from './NFTSpotlight'
 import EduChainSection from './EduChainSection'
 import Footer from './Footer'
 import SurveyPage from './SurveyPage'
+import HowItWorksSection from './HowItWorksSection'
+import CreatorSection from './CreatorSection'
+import FAQSection from './FAQSection'
 
 export {
     EcosystemOverview,
@@ -16,4 +19,7 @@ export {
     EduChainSection,
     Footer,
     SurveyPage,
+    HowItWorksSection,
+    CreatorSection,
+    FAQSection,
 }

@@ -1,60 +1,46 @@
-import BrainIcon from '../assets/brain.svg'
-import MoneyIcon from '../assets/money.svg'
-import ArtIcon from '../assets/art.svg'
-import CoinIcon from '../assets/coin.svg'
+import { Clock, BookOpen, Mail } from 'lucide-react';
 
 const EcosystemOverview = () => {
-    return <div id="ecosystem-overview" className="py-12 flex items-center">
-        <div className="px-4 mx-auto w-full">
-            <h2 className="text-center text-2xl font-semibold">Ecosystem At-a-Glance</h2>
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
-                <div className="border-2 rounded-md py-8">
-                    <img
-                        className="w-8 h-8 mx-auto"
-                        src={BrainIcon}
-                        alt="brain icon"
-                    />
-                    <div className="mt-4 text-center flex flex-col gap-y-2">
-                        <p className="font-semibold">Flashcards</p>
-                        <p className="text-sm">Learn & Create</p>
-                    </div>
-                </div>
-                <div className="border-2 rounded-md py-8">
-                    <img
-                        className="w-8 h-8 mx-auto"
-                        src={MoneyIcon}
-                        alt="money icon"
-                    />
-                    <div className="mt-4 text-center flex flex-col gap-y-2">
-                        <p className="font-semibold">Marketplace</p>
-                        <p className="text-sm">Earn & Explore</p>
-                    </div>
-                </div>
-                <div className="border-2 rounded-md py-8">
-                    <img
-                        className="w-8 h-8 mx-auto"
-                        src={ArtIcon}
-                        alt="art icon"
-                    />
-                    <div className="mt-4 text-center flex flex-col gap-y-2">
-                        <p className="font-semibold">AI Art</p>
-                        <p className="text-sm">Generate Effortlessly</p>
-                    </div>
-                </div>
-                <div className="border-2 rounded-md py-8">
-                    <img
-                        className="w-8 h-8 mx-auto"
-                        src={CoinIcon}
-                        alt="coin icon"
-                    />
-                    <div className="mt-4 text-center flex flex-col gap-y-2">
-                        <p className="font-semibold">NFT Launchpad</p>
-                        <p className="text-sm">Mint & Sell</p>
-                    </div>
-                </div>
-            </div>
+  const features = [
+    {
+      icon: <Clock size={32} />,
+      title: 'Start Small, Earn More',
+      description: 'Complete 3-minute learning sessions for instant USD rewards. Go longer for even bigger gains.'
+    },
+    {
+      icon: <BookOpen size={32} />,
+      title: 'Monetize Your Knowledge',
+      description: 'Sell your guides or tutorials, and earn USD every time someone completes your content.'
+    },
+    {
+      icon: <Mail size={32} />,
+      title: 'Frictionless Access',
+      description: 'Sign up with email or X (Twitter). No wallet needed to start.'
+    }
+  ];
+
+  return (
+    <section id="ecosystem-overview" className="py-20 px-4 bg-transparent">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-black mb-4">Learn. Earn. Repeat.</h2>
+          <p className="text-xl text-gray-600">Turn your time into USD rewards</p>
         </div>
-    </div>
+        
+        <div className="grid md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <div key={index} className="text-center p-6 bg-white border-2 border-black rounded-lg hover:shadow-lg transition-shadow">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-black text-white rounded-full mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default EcosystemOverview;
