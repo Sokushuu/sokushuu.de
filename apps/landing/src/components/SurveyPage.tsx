@@ -15,7 +15,7 @@ const SurveyPage = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-primary">
       <div className="h-screen w-full">
         <iframe
           data-tally-src="https://tally.so/r/mYBaoB"

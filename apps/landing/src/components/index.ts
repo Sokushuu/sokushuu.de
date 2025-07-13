@@ -9,6 +9,7 @@ import SurveyPage from './SurveyPage'
 import HowItWorksSection from './HowItWorksSection'
 import CreatorSection from './CreatorSection'
 import FAQSection from './FAQSection'
+import ThemeToggle from './ThemeToggle'
 
 export {
     EcosystemOverview,
@@ -22,4 +23,5 @@ export {
     HowItWorksSection,
     CreatorSection,
     FAQSection,
+    ThemeToggle,
 }

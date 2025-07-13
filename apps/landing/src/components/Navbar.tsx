@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../hooks/useTheme';
+import ThemeToggle from './ThemeToggle';
 
-import SokushuuIcon from '../assets/sokushuu.svg'
+import SokushuuWhiteIcon from '../assets/sokushuu-white.svg';
+import SokushuuBlackIcon from '../assets/sokushuu.svg';
 
 import { Menu, X } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
+  const { theme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Select appropriate Sokushuu icon based on theme
+  const SokushuuIcon = theme === 'dark' ? SokushuuWhiteIcon : SokushuuBlackIcon;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,7 +41,7 @@ export const Navbar: React.FC = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b-2 border-black' 
+        ? 'bg-secondary/95 backdrop-blur-md shadow-lg border-b-2 border-primary' 
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4">
@@ -45,7 +52,7 @@ export const Navbar: React.FC = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img src={SokushuuIcon} width={24} height={24} />
-            <span className="text-xl font-black text-black">Sokushuu</span>
+            <span className="text-xl font-black text-brand-primary">Sokushuu</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -54,17 +61,18 @@ export const Navbar: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className="text-black font-medium hover:text-gray-600 transition-colors cursor-pointer"
+                className="text-primary font-medium hover:text-secondary transition-colors cursor-pointer"
               >
                 {item.label}
               </button>
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle size="sm" />
             <button 
-              className="bg-black text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-800 transition-colors cursor-pointer"
+              className="bg-interactive-primary text-inverse px-6 py-2 rounded-lg font-bold hover:bg-interactive-hover transition-colors cursor-pointer"
               onClick={() => window.open('https://twitter.com/sokushuu_de', '_blank')}
             >
               Follow on X
@@ -73,7 +81,7 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-primary"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -82,20 +90,21 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white border-t-2 border-black">
+          <div className="md:hidden bg-secondary border-t-2 border-primary">
             <div className="py-4 space-y-4">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="block w-full text-left px-4 py-2 text-black font-medium hover:bg-gray-100 transition-colors"
+                  className="block w-full text-left px-4 py-2 text-primary font-medium hover:bg-interactive-secondary transition-colors"
                 >
                   {item.label}
                 </button>
               ))}
-              <div className="px-4">
+              <div className="px-4 flex items-center gap-4">
+                <ThemeToggle size="sm" className="flex-shrink-0" />
                 <button 
-                  className="w-full bg-black text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                  className="flex-1 bg-interactive-primary text-inverse px-6 py-2 rounded-lg font-bold hover:bg-interactive-hover transition-colors"
                   onClick={() => {
                     window.open('https://twitter.com/sokushuu_de', '_blank');
                     setIsMobileMenuOpen(false);

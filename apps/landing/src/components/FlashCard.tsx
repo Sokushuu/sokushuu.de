@@ -23,15 +23,15 @@ const FlashCard = ({ front, back, className = '' }: FlashCardProps) => {
       >
         {/* Front */}
         <div 
-          className="absolute inset-0 w-full h-full bg-zinc-100 border-2 border-black rounded-lg shadow-lg flex items-center justify-center p-6"
+          className="absolute inset-0 w-full h-full bg-elevated border-2 border-primary rounded-lg shadow-lg flex items-center justify-center p-6"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="text-lg font-medium text-center">{front}</div>
+          <div className="text-lg font-medium text-center text-primary">{front}</div>
         </div>
         
         {/* Back */}
         <div 
-          className="absolute inset-0 w-full h-full bg-zinc-800 text-white border-2 border-black rounded-lg shadow-lg flex items-center justify-center p-6"
+          className="absolute inset-0 w-full h-full bg-interactive-primary text-inverse border-2 border-primary rounded-lg shadow-lg flex items-center justify-center p-6"
           style={{ 
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)'

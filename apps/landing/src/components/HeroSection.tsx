@@ -1,14 +1,18 @@
 import { useState } from 'react'
+import { Clock, DollarSign, Globe } from 'lucide-react'
+import { useTheme } from '../hooks/useTheme'
 
 import { InteractiveLearningCard } from './InteractiveLearningFlow'
 
-import ClockIcon from '../assets/clock-three.svg'
-import UsdBadgeIcon from '../assets/usd-badge.svg'
-import GlobeIcon from '../assets/globe.svg'
-import SokushuuIcon from '../assets/sokushuu.svg'
+import SokushuuWhiteIcon from '../assets/sokushuu-white.svg'
+import SokushuuBlackIcon from '../assets/sokushuu.svg'
 
 const HeroSection = () => {
+    const { theme } = useTheme();
     const [isLearningStarted, setIsLearningStarted] = useState(false);
+
+    // Select appropriate Sokushuu icon based on theme
+    const SokushuuIcon = theme === 'dark' ? SokushuuWhiteIcon : SokushuuBlackIcon;
 
     const handleLearningStart = () => {
         setIsLearningStarted(true);
@@ -21,7 +25,7 @@ const HeroSection = () => {
                     <img className="w-16 h-16 mx-auto lg:mx-0" src={SokushuuIcon} alt="Sokushuu" />
                 </div>
                 
-                <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight text-zinc-800">
+                <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight text-primary">
                     <span className="">
                         Farm knowledge
                     </span>
@@ -29,7 +33,7 @@ const HeroSection = () => {
                     and earn USD as you learn.
                 </h1>
                 
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                <p className="text-xl text-secondary mb-8 leading-relaxed">
                     Start with just 3 minutes a day. Boost your learning, boost your USD rewards.
                 </p>
                 
@@ -37,29 +41,29 @@ const HeroSection = () => {
                     <a 
                         href="https://x.com/sokushuu_de"
                         target="_blank"
-                        className="bg-zinc-800 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-zinc-900 transition-colors text-center"
+                        className="bg-interactive-primary text-inverse px-8 py-4 rounded-lg font-bold text-lg hover:bg-interactive-hover transition-colors text-center"
                     >
                         Follow us on X for Early Access
                     </a>
                     <a 
                         href="#how-it-works"
-                        className="border-2 border-zinc-800 px-8 py-4 rounded-lg font-bold text-lg hover:bg-zinc-800 hover:text-white transition-colors text-center"
+                        className="border-2 border-interactive-primary text-interactive-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-interactive-primary hover:text-inverse transition-colors text-center"
                     >
                         See How It Works
                     </a>
                 </div>
                 
-                <div className="flex items-center justify-center lg:justify-start gap-8 text-sm text-gray-500">
+                <div className="flex items-center justify-center lg:justify-start gap-8 text-sm text-muted">
                     <div className="flex items-center gap-2">
-                        <img className="w-4 h-4" src={ClockIcon} alt="clock" />
+                        <Clock className="w-4 h-4" />
                         <span>3 min minimum</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <img className="w-4 h-4" src={UsdBadgeIcon} alt="USD" />
+                        <DollarSign className="w-4 h-4" />
                         <span>USD rewards</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <img className="w-4 h-4" src={GlobeIcon} alt="globe" />
+                        <Globe className="w-4 h-4" />
                         <span>Global access</span>
                     </div>
                 </div>
@@ -70,7 +74,7 @@ const HeroSection = () => {
                     <InteractiveLearningCard onStartLearning={handleLearningStart} />
                     
                     {!isLearningStarted && 
-                        <div className="absolute -top-4 -right-4 bg-green-300 text-black px-3 py-1 rounded-full text-sm font-bold rotate-12 shadow-lg animate-bounce">
+                        <div className="absolute -top-4 -right-4 bg-success text-interactive-primary px-3 py-1 rounded-full text-sm font-bold rotate-12 shadow-lg animate-bounce">
                             Try it now!
                         </div>
                     }

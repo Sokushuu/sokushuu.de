@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 import SokushuuIcon from '../assets/sokushuu.svg';
-import XWhiteIcon from '../assets/x-white.png'
+import XWhiteIcon from '../assets/x-white.png';
+import XBlackIcon from '../assets/x-black.png';
 
 type LearningState = 'collection' | 'question' | 'answered' | 'completed' | 'celebrating';
 
@@ -19,6 +21,7 @@ interface InteractiveLearningCardProps {
 }
 
 export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = ({ onStartLearning }) => {
+  const { resolvedTheme } = useTheme();
   const [currentState, setCurrentState] = useState<LearningState>('collection');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -28,7 +31,18 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
   const [startTime, setStartTime] = useState<number>(0);
   const [completionTime, setCompletionTime] = useState<number>(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Helper function to show toast notifications
+  const showToastNotification = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
 
   // Utility function to convert DOM element to canvas using a simpler approach
   const domToCanvas = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
@@ -240,8 +254,7 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
           await navigator.clipboard.write([
             new ClipboardItem({ 'image/png': blob })
           ]);
-          // You could add a toast notification here
-          console.log('Card copied to clipboard!');
+          showToastNotification('✅ Card copied to clipboard!');
         } else {
           // Fallback: download the image
           const url = URL.createObjectURL(blob);
@@ -250,6 +263,7 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
           link.download = 'sokushuu-completion.png';
           link.click();
           URL.revokeObjectURL(url);
+          showToastNotification('📥 Card downloaded!');
         }
       }, 'image/png');
     } catch (error) {
@@ -258,7 +272,9 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
       if (navigator.clipboard && navigator.clipboard.writeText) {
         const text = `🎉 Just completed "${collection.title}" on Sokushuu! Score: ${correctAnswers}/${questions.length}, Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}, Earned: $${collection.reward} USD`;
         await navigator.clipboard.writeText(text);
-        console.log('Copied text summary to clipboard!');
+        showToastNotification('📝 Text summary copied to clipboard!');
+      } else {
+        showToastNotification('❌ Copy failed. Please try again.');
       }
     }
   };
@@ -414,38 +430,38 @@ Learn crypto and earn rewards! 🚀`;
     <div className="flex flex-col justify-between h-full">
       <div className="space-y-8">
         <div className="text-center space-y-3">
-          <h3 className="text-2xl font-black text-zinc-800">{collection.title}</h3>
-          <p className="text-gray-600 text-sm leading-relaxed">{collection.description}</p>
+          <h3 className="text-2xl font-black text-primary">{collection.title}</h3>
+          <p className="text-secondary text-sm leading-relaxed">{collection.description}</p>
         </div>
         
         <div className="space-y-4">
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                  <HelpCircle size={16} className="text-zinc-600" />
+                <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                  <HelpCircle size={16} className="text-muted" />
                 </div>
-                <span className="text-zinc-700 font-medium">{collection.lessons} Questions</span>
+                <span className="text-primary font-medium">{collection.lessons} Questions</span>
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                  <Clock size={16} className="text-zinc-600" />
+                <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                  <Clock size={16} className="text-muted" />
                 </div>
-                <span className="text-zinc-700 font-medium">~3 min</span>
+                <span className="text-primary font-medium">~3 min</span>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <DollarSign size={16} className="text-green-600" />
+              <div className="w-8 h-8 bg-success/20 rounded-full flex items-center justify-center">
+                <DollarSign size={16} className="text-success" />
               </div>
-              <span className="text-zinc-700 font-medium">Reward</span>
+              <span className="text-primary font-medium">Reward</span>
             </div>
-            <div className="flex items-center gap-1 text-green-600">
+            <div className="flex items-center gap-1 text-success">
               <span className="text-lg font-black">${collection.reward}</span>
               <span className="text-sm font-medium">USD</span>
             </div>
@@ -455,7 +471,7 @@ Learn crypto and earn rewards! 🚀`;
       
       <button
         onClick={handleStartLearning}
-        className="bg-zinc-800 text-white px-8 py-4 rounded-lg font-bold hover:bg-zinc-900 cursor-pointer transition-colors flex items-center justify-center gap-3 shadow-lg"
+        className="bg-interactive-primary text-inverse px-8 py-4 rounded-lg font-bold hover:bg-interactive-hover cursor-pointer transition-colors flex items-center justify-center gap-3 shadow-lg"
       >
         <Play size={20} />
         <span>Start Learning</span>
@@ -466,8 +482,8 @@ Learn crypto and earn rewards! 🚀`;
   const renderQuestion = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="text-sm text-gray-600 mb-2">Question {currentQuestionIndex + 1} of {questions.length}</div>
-        <h3 className="text-lg font-black mb-4 text-zinc-800">{currentQuestion.question}</h3>
+        <div className="text-sm text-secondary mb-2">Question {currentQuestionIndex + 1} of {questions.length}</div>
+        <h3 className="text-lg font-black mb-4 text-primary">{currentQuestion.question}</h3>
       </div>
       
       <div className="space-y-3">
@@ -479,11 +495,11 @@ Learn crypto and earn rewards! 🚀`;
             className={`w-full p-3 text-left border-2 rounded-lg transition-all ${
               isAnswered
                 ? index === currentQuestion.correctAnswer
-                  ? 'border-green-500 bg-green-50 text-green-800'
+                  ? 'border-success bg-success/10 text-success'
                   : index === selectedAnswer
-                  ? 'border-red-500 bg-red-50 text-red-800'
-                  : 'border-gray-200 bg-gray-50 text-gray-500'
-                : 'border-zinc-300 hover:border-zinc-800 hover:bg-gray-50'
+                  ? 'border-error bg-error/10 text-error'
+                  : 'border-secondary bg-muted text-muted'
+                : 'border-secondary hover:border-primary hover:bg-muted'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -491,10 +507,10 @@ Learn crypto and earn rewards! 🚀`;
               {isAnswered && (
                 <div>
                   {index === currentQuestion.correctAnswer && (
-                    <CheckCircle size={20} className="text-green-600" />
+                    <CheckCircle size={20} className="text-success" />
                   )}
                   {index === selectedAnswer && index !== currentQuestion.correctAnswer && (
-                    <X size={20} className="text-red-600" />
+                    <X size={20} className="text-error" />
                   )}
                 </div>
               )}
@@ -504,13 +520,13 @@ Learn crypto and earn rewards! 🚀`;
       </div>
       
       {!isAnswered && (
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-secondary">
           Select an answer to continue
         </div>
       )}
       
       {isAnswered && (
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-secondary">
           Click the card to see your result
         </div>
       )}
@@ -519,20 +535,20 @@ Learn crypto and earn rewards! 🚀`;
 
   const renderAnswered = () => (
     <div className="space-y-6 text-center">
-      <div className={`text-2xl font-black ${selectedAnswer === currentQuestion.correctAnswer ? 'text-green-600' : 'text-red-600'}`}>
+      <div className={`text-2xl font-black ${selectedAnswer === currentQuestion.correctAnswer ? 'text-success' : 'text-error'}`}>
         {selectedAnswer === currentQuestion.correctAnswer ? '✅ Correct!' : '❌ Incorrect'}
       </div>
       
-      <div className="bg-gray-50 p-4 rounded-lg text-left border border-gray-200">
-        <h4 className="font-bold mb-2 text-zinc-800">Explanation:</h4>
-        <p className="text-gray-600 text-sm leading-relaxed">{currentQuestion.explanation}</p>
+      <div className="bg-muted p-4 rounded-lg text-left border border-secondary">
+        <h4 className="font-bold mb-2 text-primary">Explanation:</h4>
+        <p className="text-secondary text-sm leading-relaxed">{currentQuestion.explanation}</p>
       </div>
       
       <div className="flex gap-3 justify-center">
         {selectedAnswer === currentQuestion.correctAnswer && (
           <button
             onClick={handleFinishSession}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+            className="bg-success text-inverse px-6 py-3 rounded-lg font-bold hover:bg-success/90 transition-colors"
           >
             {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Claim Reward'}
           </button>
@@ -541,7 +557,7 @@ Learn crypto and earn rewards! 🚀`;
         {selectedAnswer !== currentQuestion.correctAnswer && (
             <button
                 onClick={resetFlow}
-                className="bg-zinc-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-zinc-700 transition-colors flex items-center gap-2"
+                className="bg-interactive-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-interactive-secondary/80 transition-colors flex items-center gap-2"
             >
                 <RotateCcw size={16} />
                 Try Again
@@ -549,7 +565,7 @@ Learn crypto and earn rewards! 🚀`;
         )}
       </div>
       
-      <div className="text-xs text-gray-600">
+      <div className="text-xs text-secondary">
         Click the card to review the question
       </div>
     </div>
@@ -558,11 +574,11 @@ Learn crypto and earn rewards! 🚀`;
   const renderCelebrating = () => (
     <div className="space-y-6 text-center">
       <div className="text-6xl mb-4 animate-bounce">🎉</div>
-      <div className="text-3xl font-black text-green-600 mb-4">Congratulations!</div>
-      <div className="text-xl text-zinc-700">
+      <div className="text-3xl font-black text-success mb-4">Congratulations!</div>
+      <div className="text-xl text-primary">
         You completed the session!
       </div>
-      <div className="text-lg text-gray-600">
+      <div className="text-lg text-secondary">
         {completionTime && `Finished in ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}`}
       </div>
     </div>
@@ -573,46 +589,46 @@ Learn crypto and earn rewards! 🚀`;
       <div className="space-y-8">
         <div className="text-center space-y-3">
           <div className="text-4xl mb-2">🎉</div>
-          <h3 className="text-2xl font-black text-zinc-800">Session Complete!</h3>
-          <p className="text-gray-600 text-sm leading-relaxed">
+          <h3 className="text-2xl font-black text-primary">Session Complete!</h3>
+          <p className="text-secondary text-sm leading-relaxed">
             Great job! You've completed all questions and earned your reward.
           </p>
         </div>
         
         <div className="space-y-4">
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                  <CheckCircle size={16} className="text-zinc-600" />
+                <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                  <CheckCircle size={16} className="text-muted" />
                 </div>
-                <span className="text-zinc-800 font-medium">Score</span>
+                <span className="text-primary font-medium">Score</span>
               </div>
-              <span className="text-zinc-800 font-black">{correctAnswers} / {questions.length}</span>
+              <span className="text-primary font-black">{correctAnswers} / {questions.length}</span>
             </div>
             {completionTime > 0 && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                    <Clock size={16} className="text-zinc-600" />
+                  <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                    <Clock size={16} className="text-muted" />
                   </div>
-                  <span className="text-zinc-800 font-medium">Time</span>
+                  <span className="text-primary font-medium">Time</span>
                 </div>
-                <span className="text-zinc-800 font-black">
+                <span className="text-primary font-black">
                   {Math.floor(completionTime / 60)}:{(completionTime % 60).toString().padStart(2, '0')}
                 </span>
               </div>
             )}
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+          <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                <DollarSign size={16} className="text-zinc-600" />
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <DollarSign size={16} className="text-muted" />
               </div>
-              <span className="text-zinc-800 font-medium">Earned</span>
+              <span className="text-primary font-medium">Earned</span>
             </div>
-            <div className="flex items-center gap-1 text-zinc-800">
+            <div className="flex items-center gap-1 text-primary">
               <span className="text-lg font-black">${collection.reward}</span>
               <span className="text-sm font-medium">USD</span>
             </div>
@@ -622,16 +638,16 @@ Learn crypto and earn rewards! 🚀`;
           <div className="flex gap-2">
             <button
               onClick={handleCopyImage}
-              className="flex-1 bg-zinc-100 text-zinc-100 px-4 py-2 rounded-lg font-medium bg-zinc-900 hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 border border-zinc-300"
+              className="flex-1 bg-interactive-primary text-inverse px-4 py-2 rounded-lg font-medium hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2 border border-secondary"
             >
               <Copy size={16} />
               <span className="text-sm font-semibold">Copy Image</span>
             </button>
             <button
               onClick={handleShareToX}
-              className="flex-1 bg-zinc-100 text-zinc-100 px-4 py-2 rounded-lg font-medium bg-zinc-900 hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 border border-zinc-300"
+              className="flex-1 bg-interactive-primary text-inverse px-4 py-2 rounded-lg font-medium hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2 border border-secondary"
             >
-              <img src={XWhiteIcon} alt="X" className="w-4 h-4" />
+              <img src={resolvedTheme === 'dark' ? XBlackIcon : XWhiteIcon} alt="X" className="w-4 h-4" />
               <span className="text-sm font-semibold">Share</span>
             </button>
           </div>
@@ -671,7 +687,7 @@ Learn crypto and earn rewards! 🚀`;
     <div className="relative">
       <div
         ref={cardRef}
-        className={`w-80 h-[32rem] bg-white border-2 border-zinc-800 rounded-lg shadow-lg p-6 flex items-center justify-center transition-all duration-300 ${
+        className={`w-80 h-[32rem] bg-secondary border-2 border-primary rounded-lg shadow-lg p-6 flex items-center justify-center transition-all duration-300 ${
           (currentState === 'answered' || (currentState === 'question' && isAnswered)) ? 'cursor-pointer hover:shadow-xl' : ''
         }`}
         onClick={(currentState === 'answered' || (currentState === 'question' && isAnswered)) ? handleCardFlip : undefined}
@@ -718,7 +734,7 @@ Learn crypto and earn rewards! 🚀`;
       {/* Floating reward animation */}
       {showReward && (
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="bg-green-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+          <div className="bg-success text-inverse px-4 py-2 rounded-full font-bold text-sm shadow-lg">
             +${collection.reward} USD!
           </div>
         </div>
@@ -727,14 +743,23 @@ Learn crypto and earn rewards! 🚀`;
       {/* Progress indicator */}
       {(currentState === 'question' || currentState === 'answered') && (
         <div className="absolute -bottom-8 left-0 right-0">
-          <div className="bg-gray-200 h-2 rounded-full">
+          <div className="bg-muted h-2 rounded-full">
             <div 
-              className="bg-zinc-800 h-2 rounded-full transition-all duration-300"
+              className="bg-interactive-primary h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
             ></div>
           </div>
-          <div className="text-xs text-gray-600 text-center mt-1">
+          <div className="text-xs text-secondary text-center mt-1">
             {currentQuestionIndex + 1} of {questions.length} questions
+          </div>
+        </div>
+      )}
+      
+      {/* Toast notification */}
+      {showToast && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-success text-inverse px-4 py-2 rounded-lg font-medium text-sm shadow-lg border border-success/20 animate-bounce">
+            {toastMessage}
           </div>
         </div>
       )}
