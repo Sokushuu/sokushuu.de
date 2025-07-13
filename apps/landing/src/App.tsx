@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { usePostHog } from 'posthog-js/react'
 import { SurveyPage } from './components'
 import { LandingPage } from './pages'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 // Component to track page views
 function PageViewTracker() {
@@ -19,13 +20,15 @@ function PageViewTracker() {
 
 function App() {
   return (
-    <Router>
-      <PageViewTracker />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/survey/pengguna-airdrop" element={<SurveyPage />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <PageViewTracker />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/survey/pengguna-airdrop" element={<SurveyPage />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   )
 }
 

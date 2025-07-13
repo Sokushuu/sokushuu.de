@@ -35,23 +35,23 @@ export const FAQSection: React.FC = () => {
     <section className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-black mb-4">Frequently Asked Questions</h2>
-          <p className="text-xl text-gray-600">Everything you need to know about earning USD with Sokushuu</p>
+          <h2 className="text-4xl font-black mb-4 text-primary">Frequently Asked Questions</h2>
+          <p className="text-xl text-secondary">Everything you need to know about earning USD with Sokushuu</p>
         </div>
         
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div key={index} className="border-2 border-black rounded-lg overflow-hidden bg-zinc-100">
+            <div key={index} className="border-2 border-primary rounded-lg overflow-hidden bg-secondary">
               <button
-                className="w-full px-6 py-4 text-left font-bold text-lg hover:bg-gray-50 transition-colors flex justify-between items-center"
+                className="w-full px-6 py-4 text-left font-bold text-lg hover:bg-muted transition-colors flex justify-between items-center text-primary"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
                 {faq.question}
                 {openIndex === index ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
               </button>
               {openIndex === index && (
-                <div className="px-6 py-4 bg-gray-50 border-t-2 border-black">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                <div className="px-6 py-4 bg-muted border-t-2 border-primary">
+                  <p className="text-secondary leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>
