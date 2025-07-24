@@ -6,7 +6,6 @@ import {
   CreatorSection,
   FAQSection,
   Footer,
-  CountdownSection,
 } from '../components'
 
 function LandingPage() {
@@ -14,7 +13,6 @@ function LandingPage() {
     <>
       <Navbar />
       <HeroSection />
-      <CountdownSection />
       <EcosystemOverview />
       <HowItWorksSection />
       <CreatorSection />
