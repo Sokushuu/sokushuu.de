@@ -1,0 +1,81 @@
+{
+  // Wrangler configuration for Hono API
+  "name": "sokushuu-app-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-07-24",
+  "compatibility_flags": ["nodejs_compat"],
+  
+  // Environment variables (secrets)
+  "vars": {
+    // Add any non-sensitive environment variables here
+    "ENVIRONMENT": "development"
+  },
+  
+  // KV namespace bindings
+  "kv_namespaces": [
+    {
+      "binding": "SOKUSHUU_KV",
+      "id": "8fa75c88aef84575bcbb1b82e853260f"
+    }
+  ],
+  
+  // Routes for custom domains (optional)
+  // "routes": [
+  //   {
+  //     "pattern": "api.sokushuu.de/*",
+  //     "custom_domain": true
+  //   }
+  // ],
+  
+  // Local development settings
+  "dev": {
+    "port": 8787,
+    "local_protocol": "http"
+  },
+  
+  // Production environment
+  "env": {
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "SOKUSHUU_KV",
+          "id": "8fa75c88aef84575bcbb1b82e853260f"
+        }
+      ]
+    },
+    "staging": {
+      "vars": {
+        "ENVIRONMENT": "staging"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "SOKUSHUU_KV",
+          "id": "8fa75c88aef84575bcbb1b82e853260f"
+        }
+      ]
+    }
+  },
+  
+  // Limits and settings
+  "limits": {
+    "cpu_ms": 50
+  }
+  
+  // Analytics (optional)
+  // "analytics_engine_datasets": [
+  //   {
+  //     "binding": "ANALYTICS",
+  //     "dataset": "sokushuu_api_analytics"
+  //   }
+  // ],
+  
+  // Triggers for scheduled events (optional)
+  // "triggers": {
+  //   "crons": [
+  //     "0 0 * * *"  // Daily at midnight
+  //   ]
+  // }
+}
