@@ -17,9 +17,9 @@ const HeroSection = () => {
     const handleLearningStart = () => {
         setIsLearningStarted(true);
     };
-    return <section className="min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
+    return <section className="min-h-screen flex items-center justify-center px-12 py-20">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12 items-center">
+            <div className="text-center lg:text-left lg:col-span-2">
                 {/* Sokushuu Icon above headline */}
                 <div className="mb-6">
                     <img className="w-16 h-16 mx-auto lg:mx-0" src={SokushuuIcon} alt="Sokushuu" />
