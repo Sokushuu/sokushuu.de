@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Mail, CheckCircle, Bell } from 'lucide-react';
+import { Clock, Mail, CheckCircle, Bell, AlertCircle } from 'lucide-react';
+import { useLaunchDate, useWaitlistCount, useWaitlistSubscribe } from '../hooks/api';
+import { validateEmail, isEmailFormatValid } from '../utils/validation';
 
 const CountdownSection: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -10,93 +12,16 @@ const CountdownSection: React.FC = () => {
   });
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Dynamic data states
-  const [launchDate, setLaunchDate] = useState(new Date('2025-08-24T00:00:00Z')); // Fallback date
-  const [subscriberCount, setSubscriberCount] = useState(2847); // Fallback count
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
 
-  /**
-   * API SPECIFICATION & DISCLAIMER
-   * 
-   * This component expects the following API endpoints to be implemented:
-   * 
-   * 1. GET /api/launch-config
-   *    Response: { launchDate: string (ISO 8601), subscriberCount: number }
-   *    Purpose: Fetch dynamic launch date and current subscriber count
-   * 
-   * 2. POST /api/subscribe
-   *    Body: { email: string }
-   *    Response: { success: boolean, message?: string }
-   *    Purpose: Subscribe user to launch notifications
-   * 
-   * FALLBACK BEHAVIOR:
-   * - If API calls fail, component uses hardcoded fallback values
-   * - Launch date: 2025-08-24T00:00:00Z
-   * - Subscriber count: 2,847
-   * - Email subscription: Simulated success after 1 second
-   * 
-   * TODO: Replace these placeholder functions with actual API calls
-   */
+  // API hooks
+  const { launchDate, isLoading: isLoadingLaunchDate } = useLaunchDate();
+  const { count: subscriberCount, isLoading: isLoadingCount, refetch: refetchCount } = useWaitlistCount();
+  const { subscribe, isLoading: isSubmitting } = useWaitlistSubscribe();
 
-  // API Functions (TO BE IMPLEMENTED)
-  const fetchLaunchConfig = async () => {
-    try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/launch-config');
-      // const data = await response.json();
-      // return data;
-      
-      // Simulated API response for now
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        launchDate: '2025-08-24T00:00:00Z',
-        subscriberCount: 2847 + Math.floor(Math.random() * 50) // Simulate growth
-      };
-    } catch (error) {
-      console.warn('Failed to fetch launch config, using fallback values:', error);
-      return null;
-    }
-  };
-
-  const subscribeToLaunch = async (email: string) => {
-    try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/subscribe', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
-      // const data = await response.json();
-      // return data;
-      
-      // Simulated API call for now
-      console.log('Subscribing email:', email); // Use the email parameter
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true, message: 'Successfully subscribed!' };
-    } catch (error) {
-      console.error('Subscription failed:', error);
-      return { success: false, message: 'Subscription failed. Please try again.' };
-    }
-  };
-
-  // Load launch configuration on mount
-  useEffect(() => {
-    const loadLaunchConfig = async () => {
-      setIsLoadingData(true);
-      const config = await fetchLaunchConfig();
-      
-      if (config) {
-        setLaunchDate(new Date(config.launchDate));
-        setSubscriberCount(config.subscriberCount);
-      }
-      
-      setIsLoadingData(false);
-    };
-
-    loadLaunchConfig();
-  }, []);
+  // Compute loading state for data display
+  const isLoadingData = isLoadingLaunchDate || isLoadingCount;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -118,26 +43,52 @@ const CountdownSection: React.FC = () => {
     return () => clearInterval(timer);
   }, [launchDate]);
 
+  // Handle email input changes with real-time validation
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    
+    // Clear validation error when user starts typing
+    if (validationError) {
+      setValidationError(null);
+    }
+    
+    // Show validation feedback after user has typed something
+    if (newEmail.length > 0) {
+      setShowValidation(true);
+    } else {
+      setShowValidation(false);
+    }
+  };
+
+  // Handle form submission with validation
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || isSubmitting) return;
+    if (isSubmitting) return;
 
-    setIsSubmitting(true);
-    
-    // Use the API function instead of simulation
-    const result = await subscribeToLaunch(email);
+    // Frontend validation
+    const validation = validateEmail(email);
+    if (!validation.isValid) {
+      setValidationError(validation.error || 'Please enter a valid email address');
+      setShowValidation(true);
+      return;
+    }
+
+    // Clear any previous validation errors
+    setValidationError(null);
+
+    const result = await subscribe(email.trim());
     
     if (result.success) {
       setIsSubmitted(true);
       setEmail('');
-      // Increment subscriber count on successful subscription
-      setSubscriberCount(prev => prev + 1);
+      setShowValidation(false);
+      // Refetch count to get updated subscriber count
+      refetchCount();
     } else {
-      // Handle error case - you might want to show an error message
-      console.error('Subscription failed:', result.message);
+      // Handle API error - could be duplicate email or server error
+      setValidationError(result.message || 'Subscription failed. Please try again.');
     }
-    
-    setIsSubmitting(false);
   };
 
   const timeUnits = [
@@ -201,15 +152,42 @@ const CountdownSection: React.FC = () => {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       placeholder="Enter your email address"
-                      className="w-full pl-10 pr-4 py-3 border-2 border-primary rounded-lg focus:outline-none focus:ring-interactive-focus bg-secondary text-primary placeholder:text-muted"
+                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-interactive-focus bg-secondary text-primary placeholder:text-muted transition-colors ${
+                        validationError 
+                          ? 'border-red-500 focus:ring-red-200' 
+                          : showValidation && isEmailFormatValid(email)
+                            ? 'border-green-500 focus:ring-green-200'
+                            : 'border-primary'
+                      }`}
                       required
                     />
+                    {/* Validation feedback icon */}
+                    {showValidation && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {validationError ? (
+                          <AlertCircle className="text-red-500" size={20} />
+                        ) : isEmailFormatValid(email) ? (
+                          <CheckCircle className="text-green-500" size={20} />
+                        ) : (
+                          <AlertCircle className="text-yellow-500" size={20} />
+                        )}
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* Validation error message */}
+                  {validationError && (
+                    <div className="flex items-center gap-2 text-red-600 text-sm">
+                      <AlertCircle size={16} />
+                      <span>{validationError}</span>
+                    </div>
+                  )}
+                  
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !email.trim()}
                     className="w-full bg-interactive-primary text-inverse py-3 rounded-lg font-bold hover:bg-interactive-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Subscribing...' : 'Notify Me at Launch'}
