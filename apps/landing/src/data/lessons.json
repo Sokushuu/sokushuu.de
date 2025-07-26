@@ -7,10 +7,9 @@
       "category": "DeFi",
       "difficulty": "Beginner",
       "estimatedTime": "3-4 min",
-      "reward": 0.75,
       "totalQuestions": 4,
       "thumbnail": "🏦",
-      "sponsor": "Ethereum Foundation",
+      "author": "Sokushuu Team",
       "tags": ["DeFi", "Lending", "DEX", "Yield"],
       "questions": [
         {
@@ -70,10 +69,9 @@
       "category": "NFTs",
       "difficulty": "Beginner",
       "estimatedTime": "3-5 min",
-      "reward": 0.60,
       "totalQuestions": 5,
       "thumbnail": "🎨",
-      "sponsor": "Cyfrin",
+      "author": "Sokushuu Team",
       "tags": ["NFT", "Digital Art", "Ownership", "Metadata"],
       "questions": [
         {
@@ -145,10 +143,9 @@
       "category": "Security",
       "difficulty": "Intermediate",
       "estimatedTime": "4-5 min",
-      "reward": 1.25,
       "totalQuestions": 5,
       "thumbnail": "🔒",
-      "sponsor": "Recall",
+      "author": "Sokushuu Team",
       "tags": ["Security", "Wallet", "Phishing", "Smart Contracts"],
       "questions": [
         {

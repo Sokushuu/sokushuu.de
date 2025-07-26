@@ -58,7 +58,7 @@ Learn crypto and earn rewards! 🚀`;
     reward: 0.50,
     totalQuestions: 3,
     thumbnail: "💰",
-    sponsor: "Sokushuu",
+    author: "Sokushuu Team",
     tags: ["Crypto", "Basics", "Blockchain"],
     questions: [
       {

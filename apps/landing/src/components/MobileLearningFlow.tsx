@@ -5,7 +5,8 @@ import type { LearningState, MobileLearningFlowProps } from '../types';
 
 export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({ 
   lesson, 
-  onStartLearning 
+  onStartLearning,
+  onExploreMore
 }) => {
   const navigate = useNavigate();
   const [currentState, setCurrentState] = useState<LearningState>('collection');
@@ -93,7 +94,9 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
       
       setCurrentState('completed');
       setShowConfetti(true);
-      setShowReward(true);
+      if (lesson.reward) {
+        setShowReward(true);
+      }
       triggerHapticFeedback('success');
       
       // Hide confetti after a short time
@@ -103,16 +106,36 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
     }
   };
 
-  const resetFlow = () => {
-    setCurrentState('collection');
+  const retryCurrentQuestion = () => {
     setSelectedAnswer(null);
     setIsAnswered(false);
-    setCurrentQuestionIndex(0);
-    setCorrectAnswers(0);
-    setCompletionTime(0);
-    setShowConfetti(false);
-    setShowReward(false);
-    setStartTime(0);
+    setCurrentState('question');
+  };
+
+  const continueToNextQuestion = () => {
+    if (currentQuestionIndex < lesson.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setIsAnswered(false);
+      setCurrentState('question');
+    } else {
+      // Last question - complete the lesson
+      setCurrentState('completed');
+      const endTime = Date.now();
+      const totalTime = Math.floor((endTime - startTime) / 1000);
+      setCompletionTime(totalTime);
+      
+      // Show reward animation if lesson has reward
+      if (lesson.reward) {
+        setShowReward(true);
+      }
+      
+      // Show confetti animation
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000);
+    }
   };
 
   const handleShareToX = () => {
@@ -120,16 +143,31 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
 
 📊 Score: ${correctAnswers}/${lesson.questions.length}
 ⏱️ Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}
-💰 Earned: $${lesson.reward} USD
-
-Learn Web3 and earn rewards! 🚀`;
+${lesson.reward ? `💰 Earned: $${lesson.reward} USD\n` : ''}
+Learn Web3 and level up your knowledge! 🚀`;
 
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
 
   const handleExploreMore = () => {
-    navigate('/explore');
+    // Reset learning state
+    setCurrentState('collection');
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setCorrectAnswers(0);
+    setCompletionTime(0);
+    setShowConfetti(false);
+    setShowReward(false);
+    setStartTime(0);
+    
+    // Call parent callback to reset selected lesson
+    if (onExploreMore) {
+      onExploreMore();
+    } else {
+      // Fallback navigation if no callback provided
+      navigate('/explore');
+    }
   };
 
   const renderCollection = () => (
@@ -171,23 +209,25 @@ Learn Web3 and earn rewards! 🚀`;
           </span>
         </div>
 
-        {/* Reward */}
-        <div className="bg-success/10 border border-success/20 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign size={20} className="text-success" />
-              <span className="text-primary font-bold">Earn Reward</span>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-black text-success">${lesson.reward}</p>
-              <p className="text-xs text-secondary">USD</p>
+        {/* Reward - Only show if reward exists */}
+        {lesson.reward && (
+          <div className="bg-success/10 border border-success/20 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign size={20} className="text-success" />
+                <span className="text-primary font-bold">Earn Reward</span>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-black text-success">${lesson.reward}</p>
+                <p className="text-xs text-secondary">USD</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Sponsor */}
         <div className="text-center text-xs text-secondary">
-          Sponsored by <span className="font-medium text-primary">{lesson.sponsor}</span>
+          Created by <span className="font-medium text-primary">{lesson.author}</span>
         </div>
       </div>
 
@@ -212,10 +252,12 @@ Learn Web3 and earn rewards! 🚀`;
           <span className="text-sm font-medium text-secondary">
             Question {currentQuestionIndex + 1} of {lesson.questions.length}
           </span>
-          <div className="flex items-center gap-1 text-success font-bold">
-            <DollarSign size={14} />
-            <span className="text-sm">${lesson.reward}</span>
-          </div>
+          {lesson.reward && (
+            <div className="flex items-center gap-1 text-success font-bold">
+              <DollarSign size={14} />
+              <span className="text-sm">${lesson.reward}</span>
+            </div>
+          )}
         </div>
         
         {/* Progress Bar */}
@@ -316,19 +358,37 @@ Learn Web3 and earn rewards! 🚀`;
                 </>
               ) : (
                 <>
-                  Claim Reward
-                  <DollarSign size={18} />
+                  Finish Session
+                  <CheckCircle size={18} />
                 </>
               )}
             </button>
           ) : (
-            <button
-              onClick={resetFlow}
-              className="w-full bg-interactive-secondary text-primary py-4 rounded-xl font-bold hover:bg-interactive-secondary/80 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <RotateCcw size={18} />
-              Try Again
-            </button>
+            <div className="space-y-3">
+              <button
+                onClick={continueToNextQuestion}
+                className="w-full bg-orange-500 text-white py-4 rounded-xl font-bold hover:bg-orange-600 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {currentQuestionIndex < lesson.questions.length - 1 ? (
+                  <>
+                    Continue Anyway
+                    <ArrowRight size={18} />
+                  </>
+                ) : (
+                  <>
+                    Finish Session
+                    <CheckCircle size={18} />
+                  </>
+                )}
+              </button>
+              <button
+                onClick={retryCurrentQuestion}
+                className="w-full bg-interactive-secondary text-primary py-4 rounded-xl font-bold hover:bg-interactive-secondary/80 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <RotateCcw size={18} />
+                Retry Question
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -364,11 +424,13 @@ Learn Web3 and earn rewards! 🚀`;
           </div>
         </div>
 
-        {/* Reward */}
-        <div className="bg-success/10 border border-success/20 rounded-xl p-4 text-center">
-          <div className="text-3xl font-black text-success mb-1">${lesson.reward}</div>
-          <div className="text-sm font-medium text-success">Earned!</div>
-        </div>
+        {/* Reward - Only show if reward exists */}
+        {lesson.reward && (
+          <div className="bg-success/10 border border-success/20 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-success mb-1">${lesson.reward}</div>
+            <div className="text-sm font-medium text-success">Earned!</div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-3">

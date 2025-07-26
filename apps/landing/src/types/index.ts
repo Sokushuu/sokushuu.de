@@ -14,10 +14,10 @@ export interface Lesson {
   category: string;
   difficulty: string;
   estimatedTime: string;
-  reward: number;
+  reward?: number; // Optional for beta release
   totalQuestions: number;
   thumbnail: string;
-  sponsor: string;
+  author: string; // Creator/author of the lesson
   tags: string[];
   questions: Question[];
 }
@@ -36,6 +36,7 @@ export interface MobileLearningFlowProps {
   lesson: Lesson;
   onComplete?: () => void;
   onStartLearning?: () => void;
+  onExploreMore?: () => void;
 }
 
 // Filter types

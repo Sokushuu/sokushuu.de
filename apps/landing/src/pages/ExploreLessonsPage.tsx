@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Clock, DollarSign, Star, Filter, BookOpen, Trophy } from 'lucide-react';
+import { ArrowLeft, Clock, DollarSign, BookOpen, Trophy, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MobileLearningFlow } from '../components/MobileLearningFlow';
 import type { Lesson, DifficultyFilter } from '../types';
@@ -52,10 +52,12 @@ const ExploreLessonsPage: React.FC = () => {
               <h1 className="text-lg font-bold text-primary truncate">{selectedLesson.title}</h1>
               <p className="text-sm text-secondary truncate">{selectedLesson.category} • {selectedLesson.estimatedTime}</p>
             </div>
-            <div className="flex items-center gap-1 text-success font-bold">
-              <DollarSign size={16} />
-              <span>${selectedLesson.reward}</span>
-            </div>
+            {selectedLesson.reward && (
+              <div className="flex items-center gap-1 text-success font-bold">
+                <DollarSign size={16} />
+                <span>${selectedLesson.reward}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -67,6 +69,7 @@ const ExploreLessonsPage: React.FC = () => {
               // Handle completion - could navigate to next lesson or back to explore
               handleBackToExplore();
             }}
+            onExploreMore={handleBackToExplore}
           />
         </div>
       </div>
@@ -75,7 +78,7 @@ const ExploreLessonsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile-first header */}
+      {/* Mobile-first header - Sticky */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-secondary">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
@@ -86,31 +89,8 @@ const ExploreLessonsPage: React.FC = () => {
               <ArrowLeft size={20} className="text-primary" />
             </button>
             <h1 className="text-xl font-bold text-primary">Explore Lessons</h1>
-            <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-              <Filter size={20} className="text-primary" />
-            </button>
+            <div className="w-10 h-10"></div>
           </div>
-
-          {/* Stats Banner - Mobile Optimized */}
-          {showStats && (
-            <div className="bg-gradient-to-r from-interactive-primary/10 to-success/10 rounded-xl p-4 mb-4 border border-interactive-primary/20">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-interactive-primary/20 rounded-full flex items-center justify-center">
-                    <Trophy size={20} className="text-interactive-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-primary">Welcome to Web3 Learning!</p>
-                    <p className="text-xs text-secondary">Complete lessons to earn rewards</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-black text-success">$2.60</p>
-                  <p className="text-xs text-secondary">Total Available</p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Filter Pills - Mobile Optimized */}
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -131,8 +111,27 @@ const ExploreLessonsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Stats Banner - Non-sticky */}
+      <div className="px-4 py-4">
+        {showStats && (
+          <div className="bg-gradient-to-r from-interactive-primary/10 to-success/10 rounded-xl p-4 mb-4 border border-interactive-primary/20">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-interactive-primary/20 rounded-full flex items-center justify-center">
+                  <Trophy size={20} className="text-interactive-primary" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-primary">Welcome to Web3 Learning!</p>
+                  <p className="text-xs text-secondary">Start your journey with these curated lessons</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Lessons Grid - Mobile-first */}
-      <div className="px-4 py-6">
+      <div className="px-4 pb-6">
         <div className="grid grid-cols-1 gap-4 max-w-md mx-auto sm:max-w-2xl sm:grid-cols-2 lg:max-w-4xl lg:grid-cols-3">
           {filteredLessons.map((lesson) => (
             <div
@@ -164,24 +163,21 @@ const ExploreLessonsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-1 text-secondary">
                       <BookOpen size={12} />
-                      <span>{lesson.totalQuestions}Q</span>
+                      <span>{lesson.totalQuestions} Questions</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-success font-bold">
-                    <DollarSign size={12} />
-                    <span>${lesson.reward}</span>
-                  </div>
+                  {lesson.reward && (
+                    <div className="flex items-center gap-1 text-success font-bold">
+                      <DollarSign size={12} />
+                      <span>${lesson.reward}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Sponsor */}
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-secondary">
-                    Sponsored by <span className="font-medium text-primary">{lesson.sponsor}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star size={12} className="text-yellow-500 fill-current" />
-                    <span className="text-xs text-secondary">4.8</span>
-                  </div>
+                {/* Author */}
+                <div className="flex items-center gap-1 text-xs text-secondary">
+                  <User size={12} />
+                  <span>Created by <span className="font-medium text-primary">{lesson.author}</span></span>
                 </div>
 
                 {/* Tags */}
