@@ -11,6 +11,7 @@ import CreatorSection from './CreatorSection'
 import FAQSection from './FAQSection'
 import ThemeToggle from './ThemeToggle'
 import CountdownSection from './CountdownSection'
+import MobileLearningFlow from './MobileLearningFlow'
 
 export {
     EcosystemOverview,
@@ -26,4 +27,5 @@ export {
     FAQSection,
     ThemeToggle,
     CountdownSection,
+    MobileLearningFlow,
 }
