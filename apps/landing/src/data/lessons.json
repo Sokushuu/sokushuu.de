@@ -1,0 +1,217 @@
+{
+  "lessons": [
+    {
+      "id": "defi-basics",
+      "title": "DeFi Fundamentals",
+      "description": "Learn the core concepts of Decentralized Finance and how it's revolutionizing traditional banking",
+      "category": "DeFi",
+      "difficulty": "Beginner",
+      "estimatedTime": "3-4 min",
+      "reward": 0.75,
+      "totalQuestions": 4,
+      "thumbnail": "🏦",
+      "sponsor": "Ethereum Foundation",
+      "tags": ["DeFi", "Lending", "DEX", "Yield"],
+      "questions": [
+        {
+          "id": 1,
+          "question": "What does DeFi stand for?",
+          "options": [
+            "Digital Finance",
+            "Decentralized Finance", 
+            "Derivative Finance",
+            "Distributed Finance"
+          ],
+          "correctAnswer": 1,
+          "explanation": "DeFi stands for Decentralized Finance - financial services built on blockchain without traditional intermediaries like banks."
+        },
+        {
+          "id": 2,
+          "question": "What is a DEX in DeFi?",
+          "options": [
+            "Decentralized Exchange",
+            "Digital Exchange",
+            "Data Exchange",
+            "Derivative Exchange"
+          ],
+          "correctAnswer": 0,
+          "explanation": "A DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly with each other without a centralized authority."
+        },
+        {
+          "id": 3,
+          "question": "What is yield farming in DeFi?",
+          "options": [
+            "Growing crops on blockchain",
+            "Mining cryptocurrency",
+            "Earning rewards by providing liquidity",
+            "Trading derivatives"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Yield farming involves providing liquidity to DeFi protocols in exchange for rewards, typically in the form of tokens."
+        },
+        {
+          "id": 4,
+          "question": "What is a smart contract?",
+          "options": [
+            "A legal document",
+            "Self-executing code on blockchain",
+            "A trading strategy",
+            "A type of cryptocurrency"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Smart contracts are self-executing programs on blockchain that automatically enforce agreements without intermediaries."
+        }
+      ]
+    },
+    {
+      "id": "nft-essentials",
+      "title": "NFT Essentials",
+      "description": "Understand Non-Fungible Tokens, digital ownership, and the creator economy",
+      "category": "NFTs",
+      "difficulty": "Beginner",
+      "estimatedTime": "3-5 min",
+      "reward": 0.60,
+      "totalQuestions": 5,
+      "thumbnail": "🎨",
+      "sponsor": "Cyfrin",
+      "tags": ["NFT", "Digital Art", "Ownership", "Metadata"],
+      "questions": [
+        {
+          "id": 1,
+          "question": "What makes an NFT non-fungible?",
+          "options": [
+            "It's expensive",
+            "It's unique and cannot be replaced",
+            "It's digital",
+            "It's on blockchain"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Non-fungible means each NFT is unique and cannot be replaced or exchanged on a one-to-one basis with another NFT."
+        },
+        {
+          "id": 2,
+          "question": "Where is NFT data typically stored?",
+          "options": [
+            "Entirely on blockchain",
+            "On centralized servers",
+            "Metadata on blockchain, media on IPFS",
+            "In a database"
+          ],
+          "correctAnswer": 2,
+          "explanation": "NFT metadata is stored on blockchain, but the actual media (images, videos) is typically stored on IPFS or other decentralized storage."
+        },
+        {
+          "id": 3,
+          "question": "What is minting an NFT?",
+          "options": [
+            "Buying an NFT",
+            "Creating and recording an NFT on blockchain",
+            "Selling an NFT",
+            "Copying an NFT"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Minting is the process of creating and recording a new NFT on the blockchain, establishing its unique digital identity."
+        },
+        {
+          "id": 4,
+          "question": "What is a common NFT standard on Ethereum?",
+          "options": [
+            "ERC-20",
+            "ERC-721",
+            "ERC-1155",
+            "Both ERC-721 and ERC-1155"
+          ],
+          "correctAnswer": 3,
+          "explanation": "Both ERC-721 (unique tokens) and ERC-1155 (semi-fungible tokens) are popular NFT standards on Ethereum."
+        },
+        {
+          "id": 5,
+          "question": "What are royalties in NFTs?",
+          "options": [
+            "Taxes on NFT sales",
+            "Ongoing payments to original creators",
+            "Platform fees",
+            "Gas fees"
+          ],
+          "correctAnswer": 1,
+          "explanation": "NFT royalties are automatic payments made to original creators each time their NFT is resold on secondary markets."
+        }
+      ]
+    },
+    {
+      "id": "web3-security",
+      "title": "Web3 Security Basics",
+      "description": "Essential security practices for safely navigating the Web3 ecosystem",
+      "category": "Security",
+      "difficulty": "Intermediate",
+      "estimatedTime": "4-5 min",
+      "reward": 1.25,
+      "totalQuestions": 5,
+      "thumbnail": "🔒",
+      "sponsor": "Recall",
+      "tags": ["Security", "Wallet", "Phishing", "Smart Contracts"],
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is a seed phrase?",
+          "options": [
+            "A password for exchanges",
+            "12-24 words that restore your wallet",
+            "A smart contract address",
+            "A trading strategy"
+          ],
+          "correctAnswer": 1,
+          "explanation": "A seed phrase is a series of 12-24 words that can restore access to your cryptocurrency wallet if lost or damaged."
+        },
+        {
+          "id": 2,
+          "question": "What should you do before interacting with a smart contract?",
+          "options": [
+            "Check gas fees only",
+            "Verify the contract address and audit reports",
+            "Ask friends for advice",
+            "Just proceed if it looks legitimate"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Always verify smart contract addresses and check for audit reports before interacting to avoid malicious contracts."
+        },
+        {
+          "id": 3,
+          "question": "What is a common Web3 phishing attack?",
+          "options": [
+            "Email scams only",
+            "Fake wallet connection pop-ups",
+            "SMS attacks",
+            "Phone calls"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Fake wallet connection requests are common in Web3, tricking users into connecting to malicious dApps or signing harmful transactions."
+        },
+        {
+          "id": 4,
+          "question": "How should you store large amounts of cryptocurrency?",
+          "options": [
+            "On exchanges",
+            "In hot wallets",
+            "In hardware wallets",
+            "In browser wallets"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Hardware wallets (cold storage) are the safest way to store large amounts of cryptocurrency as they're offline and harder to hack."
+        },
+        {
+          "id": 5,
+          "question": "What does 'approval' mean in Web3 transactions?",
+          "options": [
+            "Confirming a transaction",
+            "Giving a smart contract permission to spend your tokens",
+            "Validating your identity",
+            "Approving gas fees"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Token approval gives smart contracts permission to spend specific amounts of your tokens. Always check approval limits carefully."
+        }
+      ]
+    }
+  ]
+}

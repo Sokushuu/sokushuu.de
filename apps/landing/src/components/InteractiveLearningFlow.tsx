@@ -1,27 +1,16 @@
 import React, { useState, useRef } from 'react';
-import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy } from 'lucide-react';
+import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy, ArrowRight } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { useNavigate } from 'react-router-dom';
+import type { LearningState, Lesson, InteractiveLearningCardProps } from '../types';
 
 import SokushuuIcon from '../assets/sokushuu.svg';
 import XWhiteIcon from '../assets/x-white.png';
 import XBlackIcon from '../assets/x-black.png';
 
-type LearningState = 'collection' | 'question' | 'answered' | 'completed' | 'celebrating';
-
-interface Question {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-}
-
-interface InteractiveLearningCardProps {
-  onStartLearning?: () => void;
-}
-
-export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = ({ onStartLearning }) => {
+export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = ({ lesson, onStartLearning }) => {
   const { resolvedTheme } = useTheme();
+  const navigate = useNavigate();
   const [currentState, setCurrentState] = useState<LearningState>('collection');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -121,7 +110,7 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
     }
 
     // Earned box
-    drawInfoBox(ctx, 40, currentY, width - 80, 50, `Earned: $${collection.reward} USD`, '#f0fdf4', '#16a34a');
+    drawInfoBox(ctx, 40, currentY, width - 80, 50, `Earned: $${currentLesson.reward} USD`, '#f0fdf4', '#16a34a');
     currentY += 80;
 
     // Website link at the bottom
@@ -270,7 +259,7 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
       console.error('Failed to copy image:', error);
       // Fallback: create a simple text share
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        const text = `🎉 Just completed "${collection.title}" on Sokushuu! Score: ${correctAnswers}/${questions.length}, Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}, Earned: $${collection.reward} USD`;
+        const text = `🎉 Just completed "${currentLesson.title}" on Sokushuu! Score: ${correctAnswers}/${questions.length}, Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}, Earned: $${currentLesson.reward} USD`;
         await navigator.clipboard.writeText(text);
         showToastNotification('📝 Text summary copied to clipboard!');
       } else {
@@ -281,11 +270,11 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
 
   // Share to X (Twitter)
   const handleShareToX = () => {
-    const text = `🎉 Just completed "${collection.title} Demo" on @sokushuu_de! 
+    const text = `🎉 Just completed "${currentLesson.title} Demo" on @sokushuu_de! 
 
 📊 Score: ${correctAnswers}/${questions.length}
 ⏱️ Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}
-💰 Earned: $${collection.reward} USD
+💰 Earned: $${currentLesson.reward} USD
 
 Learn crypto and earn rewards! 🚀`;
 
@@ -293,49 +282,58 @@ Learn crypto and earn rewards! 🚀`;
     window.open(url, '_blank');
   };
 
-  const collection = {
+  // Default lesson for hero section demo
+  const defaultLesson: Lesson = {
+    id: "crypto-basics-demo",
     title: "Crypto Basics",
     description: "Learn fundamental cryptocurrency concepts",
+    category: "Fundamentals",
+    difficulty: "Beginner",
+    estimatedTime: "2-3 min",
     reward: 0.50,
-    lessons: 3
+    totalQuestions: 3,
+    thumbnail: "💰",
+    sponsor: "Sokushuu",
+    tags: ["Crypto", "Basics", "Blockchain"],
+    questions: [
+      {
+        id: 1,
+        question: "What is cryptocurrency?",
+        options: [
+          "To enable anyone to transfer money globally",
+          "It's just a coin",
+          "It has no goal",
+        ],
+        correctAnswer: 0,
+        explanation: "Cryptocurrencies, such as bitcoin, enable anyone to transfer money globally. Source: ethereum.org"
+      },
+      {
+        id: 2,
+        question: "What is a blockchain?",
+        options: [
+          "I don't know",
+          "A distributed ledger technology",
+          "A traditional database",
+        ],
+        correctAnswer: 1,
+        explanation: "A blockchain is a distributed ledger technology that maintains a continuously growing list of records, called blocks, which are linked and secured using cryptography."
+      },
+      {
+        id: 3,
+        question: "What does 'decentralized' mean in cryptocurrency?",
+        options: [
+          "Controlled by a single authority",
+          "No central controlling authority",
+          "Only available in certain countries",
+        ],
+        correctAnswer: 1,
+        explanation: "Decentralized means there is no central controlling authority. Instead, the network is maintained by many participants around the world."
+      }
+    ]
   };
 
-  const questions: Question[] = [
-    {
-      id: 1,
-      question: "What is cryptocurrency?",
-      options: [
-        "To enable anyone to transfer money globally",
-        "It's just a coin",
-        "It has no goal",
-      ],
-      correctAnswer: 0,
-      explanation: "Cryptocurrencies, such as bitcoin, enable anyone to transfer money globally. Source: ethereum.org"
-    },
-    {
-      id: 2,
-      question: "What is a blockchain?",
-      options: [
-        "I don't know",
-        "A distributed ledger technology",
-        "A traditional database",
-      ],
-      correctAnswer: 1,
-      explanation: "A blockchain is a distributed ledger technology that maintains a continuously growing list of records, called blocks, which are linked and secured using cryptography."
-    },
-    {
-      id: 3,
-      question: "What does 'decentralized' mean in cryptocurrency?",
-      options: [
-        "Controlled by a single authority",
-        "No central controlling authority",
-        "Only available in certain countries",
-      ],
-      correctAnswer: 1,
-      explanation: "Decentralized means there is no central controlling authority. Instead, the network is maintained by many participants around the world."
-    }
-  ];
-
+  const currentLesson = lesson || defaultLesson;
+  const questions = currentLesson.questions;
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleStartLearning = () => {
@@ -430,8 +428,8 @@ Learn crypto and earn rewards! 🚀`;
     <div className="flex flex-col justify-between h-full">
       <div className="space-y-8">
         <div className="text-center space-y-3">
-          <h3 className="text-2xl font-black text-primary">{collection.title}</h3>
-          <p className="text-secondary text-sm leading-relaxed">{collection.description}</p>
+          <h3 className="text-2xl font-black text-primary">{currentLesson.title}</h3>
+          <p className="text-secondary text-sm leading-relaxed">{currentLesson.description}</p>
         </div>
         
         <div className="space-y-4">
@@ -441,7 +439,7 @@ Learn crypto and earn rewards! 🚀`;
                 <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
                   <HelpCircle size={16} className="text-muted" />
                 </div>
-                <span className="text-primary font-medium">{collection.lessons} Questions</span>
+                <span className="text-primary font-medium">{currentLesson.totalQuestions} Questions</span>
               </div>
             </div>
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg border border-secondary">
@@ -462,7 +460,7 @@ Learn crypto and earn rewards! 🚀`;
               <span className="text-primary font-medium">Reward</span>
             </div>
             <div className="flex items-center gap-1 text-success">
-              <span className="text-lg font-black">${collection.reward}</span>
+              <span className="text-lg font-black">${currentLesson.reward}</span>
               <span className="text-sm font-medium">USD</span>
             </div>
           </div>
@@ -629,13 +627,13 @@ Learn crypto and earn rewards! 🚀`;
               <span className="text-primary font-medium">Earned</span>
             </div>
             <div className="flex items-center gap-1 text-primary">
-              <span className="text-lg font-black">${collection.reward}</span>
+              <span className="text-lg font-black">${currentLesson.reward}</span>
               <span className="text-sm font-medium">USD</span>
             </div>
           </div>
 
           {/* Share buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-4">
             <button
               onClick={handleCopyImage}
               className="flex-1 bg-interactive-primary text-inverse px-4 py-2 rounded-lg font-medium hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2 border border-secondary"
@@ -651,6 +649,15 @@ Learn crypto and earn rewards! 🚀`;
               <span className="text-sm font-semibold">Share</span>
             </button>
           </div>
+
+          {/* Explore More Button */}
+          <button
+            onClick={() => navigate('/explore')}
+            className="w-full bg-success text-inverse px-8 py-4 rounded-lg font-bold hover:bg-success/90 transition-colors flex items-center justify-center gap-3 shadow-lg"
+          >
+            <ArrowRight size={20} />
+            <span>Explore More Lessons</span>
+          </button>
         </div>
       </div>
       
@@ -735,7 +742,7 @@ Learn crypto and earn rewards! 🚀`;
       {showReward && (
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="bg-success text-inverse px-4 py-2 rounded-full font-bold text-sm shadow-lg">
-            +${collection.reward} USD!
+            +${currentLesson.reward} USD!
           </div>
         </div>
       )}
