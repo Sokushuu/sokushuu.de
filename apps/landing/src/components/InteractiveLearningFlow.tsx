@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy, ArrowRight } from 'lucide-react';
+import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, ArrowRight } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import type { LearningState, Lesson, InteractiveLearningCardProps } from '../types';
 
-import SokushuuIcon from '../assets/sokushuu.svg';
 import XWhiteIcon from '../assets/x-white.png';
 import XBlackIcon from '../assets/x-black.png';
 
@@ -20,253 +19,19 @@ export const InteractiveLearningCard: React.FC<InteractiveLearningCardProps> = (
   const [startTime, setStartTime] = useState<number>(0);
   const [completionTime, setCompletionTime] = useState<number>(0);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [showToast] = useState(false);
+  const [toastMessage] = useState('');
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Helper function to show toast notifications
-  const showToastNotification = (message: string) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
+  // Helper function to show toast notifications (currently unused)
+  // const showToastNotification = (message: string) => {
+  //   setToastMessage(message);
+  //   setShowToast(true);
+  //   setTimeout(() => {
+  //     setShowToast(false);
+  //   }, 3000);
+  // };
 
-  // Utility function to convert DOM element to canvas using a simpler approach
-  const domToCanvas = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas context not available');
-
-    const rect = element.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 1;
-    
-    canvas.width = rect.width * scale;
-    canvas.height = rect.height * scale;
-    ctx.scale(scale, scale);
-
-    // Fill with white background
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-
-    // Since we can't use foreignObject due to CORS, let's manually recreate the card content
-    await drawCardContent(ctx, rect.width, rect.height);
-    
-    return canvas;
-  };
-
-  // Function to manually draw the card content
-  const drawCardContent = async (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    // Draw the exact SVG pattern background from CSS
-    await drawSquarePattern(ctx, width, height);
-
-    // Set up fonts and styles
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // Draw the border (similar to border-2 border-zinc-800)
-    ctx.strokeStyle = '#27272a';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, width - 2, height - 2);
-
-    // Draw the completion content
-    const centerX = width / 2;
-    let currentY = 60;
-
-    // Draw simplified Sokushuu logo at the top
-    await drawSokushuuLogo(ctx, centerX - 15, currentY - 25, 30, 30);
-    currentY += 45;
-
-    // Title emoji
-    ctx.font = '32px serif';
-    ctx.fillStyle = '#000';
-    ctx.fillText('🎉', centerX, currentY);
-    currentY += 50;
-
-    // Title text
-    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#16a34a'; // green-600
-    ctx.fillText('Session Complete!', centerX, currentY);
-    currentY += 40;
-
-    // Description
-    ctx.font = '14px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#6b7280'; // gray-600
-    ctx.fillText('Great job! You\'ve completed all questions', centerX, currentY);
-    currentY += 20;
-    ctx.fillText('and earned your reward.', centerX, currentY);
-    currentY += 50;
-
-    // Score box
-    drawInfoBox(ctx, 40, currentY, width - 80, 50, `Score: ${correctAnswers} / ${questions.length}`, '#f9fafb');
-    currentY += 65;
-
-    // Time box (if available)
-    if (completionTime > 0) {
-      const timeText = `Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}`;
-      drawInfoBox(ctx, 40, currentY, width - 80, 50, timeText, '#f9fafb');
-      currentY += 65;
-    }
-
-    // Earned box
-    drawInfoBox(ctx, 40, currentY, width - 80, 50, `Earned: $${currentLesson.reward} USD`, '#f0fdf4', '#16a34a');
-    currentY += 80;
-
-    // Website link at the bottom
-    ctx.font = '12px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#6b7280'; // gray-600
-    ctx.fillText('sokushuu.de', centerX, height - 30);
-  };
-
-  // Function to draw the exact SVG pattern from CSS
-  const drawSquarePattern = async (ctx: CanvasRenderingContext2D, width: number, height: number): Promise<void> => {
-    return new Promise((resolve) => {
-      // First fill with the base background color
-      ctx.fillStyle = '#f4f4f5'; // zinc-100
-      ctx.fillRect(0, 0, width, height);
-      
-      // Create pattern from the SVG data URI used in index.css
-      const svgDataUri = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2352525b' fill-opacity='0.08'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
-      
-      const patternImg = new Image();
-      patternImg.onload = () => {
-        const pattern = ctx.createPattern(patternImg, 'repeat');
-        if (pattern) {
-          ctx.fillStyle = pattern;
-          ctx.fillRect(0, 0, width, height);
-        }
-        resolve();
-      };
-      patternImg.onerror = () => {
-        // Fallback: keep the solid background
-        resolve();
-      };
-      patternImg.src = svgDataUri;
-    });
-  };
-
-  // Function to draw a simplified Sokushuu logo
-  const drawSokushuuLogo = async (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
-    try {
-      // Create an image element and load the SVG
-      const img = new Image();
-      
-      // Use the imported SVG directly as it should be a URL string
-      const svgUrl = SokushuuIcon;
-      
-      return new Promise<void>((resolve) => {
-        img.onload = () => {
-          // Draw the SVG image onto the canvas
-          ctx.drawImage(img, x, y, width, height);
-          resolve();
-        };
-        
-        img.onerror = () => {
-          // Fallback to simplified logo if SVG fails to load
-          drawFallbackLogo(ctx, x, y, width, height);
-          resolve();
-        };
-        
-        img.src = svgUrl;
-      });
-    } catch (error) {
-      // Fallback to simplified logo if anything goes wrong
-      drawFallbackLogo(ctx, x, y, width, height);
-    }
-  };
-
-  // Fallback function for simplified logo
-  const drawFallbackLogo = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
-    // Draw a simplified "S" shape representing Sokushuu
-    ctx.fillStyle = '#27272a'; // zinc-800
-    ctx.lineWidth = 2;
-    
-    // Create a simple "S" curve
-    ctx.beginPath();
-    
-    // Top curve
-    ctx.arc(x + width * 0.25, y + height * 0.25, width * 0.15, Math.PI * 1.2, Math.PI * 2.2);
-    
-    // Middle section
-    ctx.lineTo(x + width * 0.5, y + height * 0.5);
-    
-    // Bottom curve
-    ctx.arc(x + width * 0.75, y + height * 0.75, width * 0.15, Math.PI * 0.2, Math.PI * 1.2);
-    
-    ctx.strokeStyle = '#27272a';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    
-    // Add a small square accent (representing learning blocks)
-    ctx.fillStyle = '#16a34a'; // green-600
-    ctx.fillRect(x + width * 0.8, y + width * 0.1, width * 0.15, height * 0.15);
-  };
-
-  // Helper function to draw info boxes
-  const drawInfoBox = (
-    ctx: CanvasRenderingContext2D, 
-    x: number, 
-    y: number, 
-    width: number, 
-    height: number, 
-    text: string, 
-    bgColor: string = '#f9fafb',
-    textColor: string = '#374151'
-  ) => {
-    // Draw background
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(x, y, width, height);
-    
-    // Draw border
-    ctx.strokeStyle = '#e5e7eb';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, width, height);
-    
-    // Draw text
-    ctx.font = '14px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = textColor;
-    ctx.textAlign = 'center';
-    ctx.fillText(text, x + width / 2, y + height / 2);
-  };
-
-  // Copy card as image to clipboard
-  const handleCopyImage = async () => {
-    try {
-      if (!cardRef.current || currentState !== 'completed') return;
-      
-      const canvas = await domToCanvas(cardRef.current);
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        
-        if (navigator.clipboard && ClipboardItem) {
-          await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-          ]);
-          showToastNotification('✅ Card copied to clipboard!');
-        } else {
-          // Fallback: download the image
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = 'sokushuu-completion.png';
-          link.click();
-          URL.revokeObjectURL(url);
-          showToastNotification('📥 Card downloaded!');
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error('Failed to copy image:', error);
-      // Fallback: create a simple text share
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        const text = `🎉 Just completed "${currentLesson.title}" on Sokushuu! Score: ${correctAnswers}/${questions.length}, Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}, Earned: $${currentLesson.reward} USD`;
-        await navigator.clipboard.writeText(text);
-        showToastNotification('📝 Text summary copied to clipboard!');
-      } else {
-        showToastNotification('❌ Copy failed. Please try again.');
-      }
-    }
-  };
 
   // Share to X (Twitter)
   const handleShareToX = () => {
@@ -632,32 +397,24 @@ Learn crypto and earn rewards! 🚀`;
             </div>
           </div>
 
-          {/* Share buttons */}
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={handleCopyImage}
-              className="flex-1 bg-interactive-primary text-inverse px-4 py-2 rounded-lg font-medium hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2 border border-secondary"
-            >
-              <Copy size={16} />
-              <span className="text-sm font-semibold">Copy Image</span>
-            </button>
+          {/* Action buttons - Single row */}
+          <div className="flex gap-3">
             <button
               onClick={handleShareToX}
-              className="flex-1 bg-interactive-primary text-inverse px-4 py-2 rounded-lg font-medium hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2 border border-secondary"
+              className="flex-1 bg-interactive-primary text-inverse px-4 py-3 rounded-lg font-bold hover:bg-interactive-hover transition-colors flex items-center justify-center gap-2"
             >
               <img src={resolvedTheme === 'dark' ? XBlackIcon : XWhiteIcon} alt="X" className="w-4 h-4" />
-              <span className="text-sm font-semibold">Share</span>
+              <span>Share</span>
+            </button>
+            
+            <button
+              onClick={() => navigate('/explore')}
+              className="flex-1 bg-success text-inverse px-4 py-3 rounded-lg font-bold hover:bg-success/90 transition-colors flex items-center justify-center gap-2"
+            >
+              <ArrowRight size={16} />
+              <span>Explore</span>
             </button>
           </div>
-
-          {/* Explore More Button */}
-          <button
-            onClick={() => navigate('/explore')}
-            className="w-full bg-success text-inverse px-8 py-4 rounded-lg font-bold hover:bg-success/90 transition-colors flex items-center justify-center gap-3 shadow-lg"
-          >
-            <ArrowRight size={20} />
-            <span>Explore More Lessons</span>
-          </button>
         </div>
       </div>
       
