@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Clock, DollarSign, BookOpen, Trophy, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { usePostHog } from 'posthog-js/react';
 import { MobileLearningFlow } from '../components/MobileLearningFlow';
 import type { Lesson, DifficultyFilter } from '../types';
 import lessonsData from '../data/lessons.json';
 
 const ExploreLessonsPage: React.FC = () => {
   const navigate = useNavigate();
+  const posthog = usePostHog();
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [filter, setFilter] = useState<DifficultyFilter>('all');
   const [showStats, setShowStats] = useState(true);
@@ -27,11 +29,28 @@ const ExploreLessonsPage: React.FC = () => {
   };
 
   const handleStartLesson = (lesson: Lesson) => {
+    // Analytics: Track lesson selection
+    posthog?.capture('lesson_selected', {
+      lesson_id: lesson.id,
+      lesson_title: lesson.title,
+      lesson_difficulty: lesson.difficulty,
+      has_reward: !!lesson.reward,
+      author: lesson.author
+    });
+
     setSelectedLesson(lesson);
     setShowStats(false);
   };
 
   const handleBackToExplore = () => {
+    // Analytics: Track lesson abandonment if lesson was in progress
+    if (selectedLesson) {
+      posthog?.capture('lesson_abandoned', {
+        lesson_id: selectedLesson.id,
+        reason: 'back_button_clicked'
+      });
+    }
+
     setSelectedLesson(null);
     setShowStats(true);
   };

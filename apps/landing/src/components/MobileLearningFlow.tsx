@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy, ArrowRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { usePostHog } from 'posthog-js/react';
 import type { LearningState, MobileLearningFlowProps } from '../types';
 
 export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({ 
@@ -9,6 +10,7 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
   onExploreMore
 }) => {
   const navigate = useNavigate();
+  const posthog = usePostHog();
   const [currentState, setCurrentState] = useState<LearningState>('collection');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -19,6 +21,8 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
   const [completionTime, setCompletionTime] = useState<number>(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showToast] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState(0);
+  const [attemptCount, setAttemptCount] = useState(1);
   const [toastMessage] = useState('');
 
   const currentQuestion = lesson.questions[currentQuestionIndex];
@@ -53,6 +57,18 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
       setCurrentState('question');
       const now = Date.now();
       setStartTime(now);
+      setQuestionStartTime(now);
+      
+      // Analytics: Track lesson start
+      posthog?.capture('lesson_started', {
+        lesson_id: lesson.id,
+        lesson_title: lesson.title,
+        lesson_difficulty: lesson.difficulty,
+        has_reward: !!lesson.reward,
+        reward_amount: lesson.reward || 0,
+        author: lesson.author
+      });
+      
       onStartLearning?.();
       triggerHapticFeedback('light');
     } catch (err) {
@@ -67,6 +83,18 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
     setIsAnswered(true);
     
     const isCorrect = answerIndex === currentQuestion.correctAnswer;
+    const answerTime = Math.floor((Date.now() - questionStartTime) / 1000);
+    
+    // Analytics: Track question answer
+    posthog?.capture('question_answered', {
+      lesson_id: lesson.id,
+      question_index: currentQuestionIndex,
+      is_correct: isCorrect,
+      answer_selected: answerIndex,
+      correct_answer: currentQuestion.correctAnswer,
+      time_spent_seconds: answerTime,
+      attempt_number: attemptCount
+    });
     
     // Haptic feedback
     triggerHapticFeedback(isCorrect ? 'success' : 'error');
@@ -85,12 +113,25 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
       setSelectedAnswer(null);
       setIsAnswered(false);
       setCurrentState('question');
+      setQuestionStartTime(Date.now());
+      setAttemptCount(1); // Reset attempt count for new question
       triggerHapticFeedback('light');
     } else {
       // All questions completed
       const endTime = Date.now();
       const timeTaken = startTime ? Math.round((endTime - startTime) / 1000) : 0;
       setCompletionTime(timeTaken);
+      
+      // Analytics: Track lesson completion
+      posthog?.capture('lesson_completed', {
+        lesson_id: lesson.id,
+        score: correctAnswers,
+        total_questions: lesson.questions.length,
+        completion_time_seconds: timeTaken,
+        had_wrong_answers: correctAnswers < lesson.questions.length,
+        reward_claimed: !!lesson.reward,
+        completion_percentage: Math.round((correctAnswers / lesson.questions.length) * 100)
+      });
       
       setCurrentState('completed');
       setShowConfetti(true);
@@ -107,23 +148,55 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
   };
 
   const retryCurrentQuestion = () => {
+    // Analytics: Track wrong answer retry action
+    posthog?.capture('wrong_answer_action', {
+      lesson_id: lesson.id,
+      question_index: currentQuestionIndex,
+      action: 'retry',
+      attempt_number: attemptCount
+    });
+    
     setSelectedAnswer(null);
     setIsAnswered(false);
     setCurrentState('question');
+    setQuestionStartTime(Date.now());
+    setAttemptCount(prev => prev + 1);
   };
 
   const continueToNextQuestion = () => {
+    // Analytics: Track wrong answer continue action
+    posthog?.capture('wrong_answer_action', {
+      lesson_id: lesson.id,
+      question_index: currentQuestionIndex,
+      action: 'continue',
+      attempt_number: attemptCount
+    });
+    
     if (currentQuestionIndex < lesson.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
       setCurrentState('question');
+      setQuestionStartTime(Date.now());
+      setAttemptCount(1); // Reset attempt count for new question
     } else {
       // Last question - complete the lesson
-      setCurrentState('completed');
       const endTime = Date.now();
       const totalTime = Math.floor((endTime - startTime) / 1000);
       setCompletionTime(totalTime);
+      
+      // Analytics: Track lesson completion
+      posthog?.capture('lesson_completed', {
+        lesson_id: lesson.id,
+        score: correctAnswers,
+        total_questions: lesson.questions.length,
+        completion_time_seconds: totalTime,
+        had_wrong_answers: correctAnswers < lesson.questions.length,
+        reward_claimed: !!lesson.reward,
+        completion_percentage: Math.round((correctAnswers / lesson.questions.length) * 100)
+      });
+      
+      setCurrentState('completed');
       
       // Show reward animation if lesson has reward
       if (lesson.reward) {
@@ -139,6 +212,15 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
   };
 
   const handleShareToX = () => {
+    // Analytics: Track lesson share
+    posthog?.capture('lesson_shared', {
+      lesson_id: lesson.id,
+      platform: 'twitter',
+      had_reward: !!lesson.reward,
+      score: `${correctAnswers}/${lesson.questions.length}`,
+      completion_percentage: Math.round((correctAnswers / lesson.questions.length) * 100)
+    });
+
     const text = `🎉 Just completed "${lesson.title}" on @sokushuu_de! 
 
 📊 Score: ${correctAnswers}/${lesson.questions.length}
@@ -151,6 +233,13 @@ Learn Web3 and level up your knowledge! 🚀`;
   };
 
   const handleExploreMore = () => {
+    // Analytics: Track explore more navigation
+    posthog?.capture('explore_more_clicked', {
+      from_lesson: lesson.id,
+      lesson_completed: currentState === 'completed',
+      score: `${correctAnswers}/${lesson.questions.length}`
+    });
+
     // Reset learning state
     setCurrentState('collection');
     setCurrentQuestionIndex(0);
@@ -160,6 +249,8 @@ Learn Web3 and level up your knowledge! 🚀`;
     setShowConfetti(false);
     setShowReward(false);
     setStartTime(0);
+    setQuestionStartTime(0);
+    setAttemptCount(1);
     
     // Call parent callback to reset selected lesson
     if (onExploreMore) {
