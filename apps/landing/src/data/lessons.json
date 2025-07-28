@@ -209,6 +209,178 @@
           "explanation": "Token approval gives smart contracts permission to spend specific amounts of your tokens. Always check approval limits carefully."
         }
       ]
+    },
+    {
+      "id": "recall-basics",
+      "title": "Recall Basics",
+      "description": "Learn about Recall, the AI agent platform that transforms promises into performance",
+      "category": "AI Agents",
+      "difficulty": "Beginner",
+      "estimatedTime": "3-4 min",
+      "totalQuestions": 4,
+      "thumbnail": "🤖",
+      "author": "Sokushuu Team",
+      "tags": ["AI Agents", "Competition", "Blockchain", "Trading"],
+      "questions": [
+        {
+          "id": 1,
+          "question": "What best describes Recall?",
+          "options": [
+            "A cryptocurrency exchange",
+            "An AI agent competition platform",
+            "A blockchain development tool",
+            "A trading bot marketplace"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Recall is a platform where AI agents compete in standardized environments to prove their capabilities through verifiable performance."
+        },
+        {
+          "id": 2,
+          "question": "What problem does Recall solve in AI development?",
+          "options": [
+            "Making AI agents faster",
+            "Reducing development costs",
+            "Transforming vague promises into verifiable performance",
+            "Teaching people to code"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Recall addresses the issue of unverifiable AI claims by providing objective, measurable performance testing."
+        },
+        {
+          "id": 3,
+          "question": "What type of competitions does Recall primarily offer?",
+          "options": [
+            "Gaming tournaments",
+            "Crypto trading competitions",
+            "Art creation contests",
+            "Writing competitions"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Recall focuses on crypto trading competitions where agents execute trades and are ranked by portfolio performance."
+        },
+        {
+          "id": 4,
+          "question": "What is the main benefit for developers using Recall?",
+          "options": [
+            "Free cloud hosting",
+            "Automatic marketing",
+            "Building reputation through proven results",
+            "Learning to trade manually"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Developers can establish credibility in the AI community by demonstrating actual agent performance rather than relying on marketing claims."
+        }
+      ]
+    },
+    {
+      "id": "recall-advanced",
+      "title": "Advanced Recall Development",
+      "description": "Master building competitive AI agents with implementation strategies and optimization techniques",
+      "category": "AI Agents",
+      "difficulty": "Advanced",
+      "estimatedTime": "6-8 min",
+      "totalQuestions": 8,
+      "thumbnail": "⚡",
+      "author": "Sokushuu Team",
+      "tags": ["AI Agents", "Development", "API Integration", "Performance", "Blockchain"],
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is the minimum Python version required for Recall agent development?",
+          "options": [
+            "Python 2.7+",
+            "Python 3.6+",
+            "Python 3.8+",
+            "Python 3.10+"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Recall requires Python 3.8+ or equivalent for agent development to ensure compatibility with modern libraries and features."
+        },
+        {
+          "id": 2,
+          "question": "How do agents authenticate with the Recall platform?",
+          "options": [
+            "Username and password",
+            "API key authentication",
+            "Social media login",
+            "Blockchain wallet signature"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Recall uses API key authentication to securely identify and authorize agent access to platform resources."
+        },
+        {
+          "id": 3,
+          "question": "Which blockchain networks does Recall support for trading competitions?",
+          "options": [
+            "Only Ethereum",
+            "Only Bitcoin",
+            "Ethereum, Solana, and others",
+            "All existing blockchains"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Recall supports multiple blockchain networks including Ethereum, Solana, and other major networks for diverse trading opportunities."
+        },
+        {
+          "id": 4,
+          "question": "What should developers use before deploying agents to live competitions?",
+          "options": [
+            "Production environment directly",
+            "Sandbox environment",
+            "Local simulation only",
+            "Paper trading platforms"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Recall provides sandbox environments for safe testing and validation before agents participate in live competitions."
+        },
+        {
+          "id": 5,
+          "question": "How are agents primarily ranked in Recall trading competitions?",
+          "options": [
+            "Number of trades executed",
+            "Speed of execution",
+            "Portfolio performance results",
+            "Code complexity"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Agents are ranked based on their actual portfolio performance, measuring the effectiveness of their trading strategies."
+        },
+        {
+          "id": 6,
+          "question": "What is a crucial component for competitive agent development?",
+          "options": [
+            "Maximum trading frequency",
+            "Risk management and portfolio diversification",
+            "Using only one blockchain",
+            "Copying other successful agents"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Effective risk management and portfolio diversification are essential for consistent performance and avoiding significant losses."
+        },
+        {
+          "id": 7,
+          "question": "What type of data can agents access through Recall's API?",
+          "options": [
+            "Only current prices",
+            "Real-time market data and historical information",
+            "Only trading history",
+            "Social media sentiment only"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Recall's API provides comprehensive access to real-time market data, historical information, and performance metrics for informed decision-making."
+        },
+        {
+          "id": 8,
+          "question": "What is a key strategy for high-performing Recall agents?",
+          "options": [
+            "Executing as many trades as possible",
+            "Following other agents' strategies",
+            "Dynamic strategy adaptation based on market conditions",
+            "Using only manual trading rules"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Top-performing agents implement dynamic strategies that adapt to changing market conditions rather than using static approaches."
+        }
+      ]
     }
   ]
 }
