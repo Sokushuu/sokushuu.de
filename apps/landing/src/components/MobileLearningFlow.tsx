@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { DollarSign, CheckCircle, X, Play, RotateCcw, HelpCircle, Clock, Copy, ArrowRight, Home } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { DollarSign, CheckCircle, X, RotateCcw, Copy, ArrowRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePostHog } from 'posthog-js/react';
 import type { LearningState, MobileLearningFlowProps } from '../types';
@@ -11,7 +11,7 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
 }) => {
   const navigate = useNavigate();
   const posthog = usePostHog();
-  const [currentState, setCurrentState] = useState<LearningState>('collection');
+  const [currentState, setCurrentState] = useState<LearningState>('question');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showReward, setShowReward] = useState(false);
@@ -52,29 +52,25 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
   //   }, 3000);
   // };
 
-  const handleStartLearning = () => {
-    try {
-      setCurrentState('question');
-      const now = Date.now();
-      setStartTime(now);
-      setQuestionStartTime(now);
-      
-      // Analytics: Track lesson start
-      posthog?.capture('lesson_started', {
-        lesson_id: lesson.id,
-        lesson_title: lesson.title,
-        lesson_difficulty: lesson.difficulty,
-        has_reward: !!lesson.reward,
-        reward_amount: lesson.reward || 0,
-        author: lesson.author
-      });
-      
-      onStartLearning?.();
-      triggerHapticFeedback('light');
-    } catch (err) {
-      console.log({ err });
-    }
-  };
+  // Initialize learning flow on component mount
+  useEffect(() => {
+    const now = Date.now();
+    setStartTime(now);
+    setQuestionStartTime(now);
+    
+    // Analytics: Track lesson start
+    posthog?.capture('lesson_started', {
+      lesson_id: lesson.id,
+      lesson_title: lesson.title,
+      lesson_difficulty: lesson.difficulty,
+      has_reward: !!lesson.reward,
+      reward_amount: lesson.reward || 0,
+      author: lesson.author
+    });
+    
+    onStartLearning?.();
+    triggerHapticFeedback('light');
+  }, [lesson.id, lesson.title, lesson.difficulty, lesson.reward, lesson.author, posthog, onStartLearning]);
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (isAnswered) return;
@@ -221,12 +217,15 @@ export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({
       completion_percentage: Math.round((correctAnswers / lesson.questions.length) * 100)
     });
 
+    const lessonUrl = `${window.location.origin}/lesson/${lesson.id}`;
     const text = `🎉 Just completed "${lesson.title}" on @sokushuu_de! 
 
 📊 Score: ${correctAnswers}/${lesson.questions.length}
 ⏱️ Time: ${Math.floor(completionTime / 60)}:${(completionTime % 60).toString().padStart(2, '0')}
 ${lesson.reward ? `💰 Earned: $${lesson.reward} USD\n` : ''}
-Learn Web3 and level up your knowledge! 🚀`;
+Learn Web3 and level up your knowledge! 🚀
+
+Try it yourself: ${lessonUrl}`;
 
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
@@ -241,7 +240,7 @@ Learn Web3 and level up your knowledge! 🚀`;
     });
 
     // Reset learning state
-    setCurrentState('collection');
+    setCurrentState('question');
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setCorrectAnswers(0);
@@ -261,79 +260,6 @@ Learn Web3 and level up your knowledge! 🚀`;
     }
   };
 
-  const renderCollection = () => (
-    <div className="w-full max-w-sm mx-auto bg-secondary border-2 border-primary rounded-2xl shadow-xl overflow-hidden">
-      {/* Header with thumbnail */}
-      <div className="bg-gradient-to-br from-interactive-primary/10 to-success/10 p-6 text-center border-b border-primary/10">
-        <div className="text-6xl mb-3">{lesson.thumbnail}</div>
-        <h3 className="text-xl font-black text-primary mb-2">{lesson.title}</h3>
-        <p className="text-secondary text-sm leading-relaxed">{lesson.description}</p>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 space-y-4">
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-muted rounded-xl p-3 text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <HelpCircle size={16} className="text-interactive-primary" />
-            </div>
-            <p className="text-sm font-bold text-primary">{lesson.totalQuestions}</p>
-            <p className="text-xs text-secondary">Questions</p>
-          </div>
-          <div className="bg-muted rounded-xl p-3 text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Clock size={16} className="text-interactive-primary" />
-            </div>
-            <p className="text-sm font-bold text-primary">{lesson.estimatedTime}</p>
-            <p className="text-xs text-secondary">Duration</p>
-          </div>
-        </div>
-
-        {/* Difficulty & Category */}
-        <div className="flex gap-2">
-          <span className="px-3 py-1 bg-interactive-primary/10 text-interactive-primary text-xs font-medium rounded-full">
-            {lesson.category}
-          </span>
-          <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
-            {lesson.difficulty}
-          </span>
-        </div>
-
-        {/* Reward - Only show if reward exists */}
-        {lesson.reward && (
-          <div className="bg-success/10 border border-success/20 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DollarSign size={20} className="text-success" />
-                <span className="text-primary font-bold">Earn Reward</span>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-black text-success">${lesson.reward}</p>
-                <p className="text-xs text-secondary">USD</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Sponsor */}
-        <div className="text-center text-xs text-secondary">
-          Created by <span className="font-medium text-primary">{lesson.author}</span>
-        </div>
-      </div>
-
-      {/* CTA Button */}
-      <div className="p-6 pt-0">
-        <button
-          onClick={handleStartLearning}
-          className="w-full bg-interactive-primary text-inverse py-4 rounded-xl font-bold text-lg hover:bg-interactive-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg"
-        >
-          <Play size={20} />
-          Start Learning
-        </button>
-      </div>
-    </div>
-  );
 
   const renderQuestion = () => (
     <div className="w-full max-w-sm mx-auto bg-secondary border-2 border-primary rounded-2xl shadow-xl overflow-hidden">
@@ -555,8 +481,6 @@ Learn Web3 and level up your knowledge! 🚀`;
 
   const getCardContent = () => {
     switch (currentState) {
-      case 'collection':
-        return renderCollection();
       case 'question':
         return renderQuestion();
       case 'answered':
@@ -564,7 +488,7 @@ Learn Web3 and level up your knowledge! 🚀`;
       case 'completed':
         return renderCompleted();
       default:
-        return renderCollection();
+        return renderQuestion();
     }
   };
 

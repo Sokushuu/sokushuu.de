@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { ArrowLeft, Clock, DollarSign, BookOpen, Trophy, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePostHog } from 'posthog-js/react';
-import { MobileLearningFlow } from '../components/MobileLearningFlow';
 import type { Lesson, DifficultyFilter } from '../types';
 import lessonsData from '../data/lessons.json';
 
 const ExploreLessonsPage: React.FC = () => {
   const navigate = useNavigate();
   const posthog = usePostHog();
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [filter, setFilter] = useState<DifficultyFilter>('all');
-  const [showStats, setShowStats] = useState(true);
 
-  const lessons: Lesson[] = lessonsData.lessons;
+  const lessons: Lesson[] = lessonsData.lessons as Lesson[];
 
   const filteredLessons = lessons.filter(lesson => 
     filter === 'all' || lesson.difficulty.toLowerCase() === filter
@@ -38,62 +35,10 @@ const ExploreLessonsPage: React.FC = () => {
       author: lesson.author
     });
 
-    setSelectedLesson(lesson);
-    setShowStats(false);
+    // Navigate to the dedicated lesson collection page
+    navigate(`/lesson/${lesson.id}`);
   };
 
-  const handleBackToExplore = () => {
-    // Analytics: Track lesson abandonment if lesson was in progress
-    if (selectedLesson) {
-      posthog?.capture('lesson_abandoned', {
-        lesson_id: selectedLesson.id,
-        reason: 'back_button_clicked'
-      });
-    }
-
-    setSelectedLesson(null);
-    setShowStats(true);
-  };
-
-  if (selectedLesson) {
-    return (
-      <div className="min-h-screen bg-background">
-        {/* Mobile-first header */}
-        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-secondary px-4 py-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleBackToExplore}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
-            >
-              <ArrowLeft size={20} className="text-primary" />
-            </button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold text-primary truncate">{selectedLesson.title}</h1>
-              <p className="text-sm text-secondary truncate">{selectedLesson.category} • {selectedLesson.estimatedTime}</p>
-            </div>
-            {selectedLesson.reward && (
-              <div className="flex items-center gap-1 text-success font-bold">
-                <DollarSign size={16} />
-                <span>${selectedLesson.reward}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Learning Content */}
-        <div className="min-h-[calc(100vh-80px)]">
-          <MobileLearningFlow
-            lesson={selectedLesson}
-            onComplete={() => {
-              // Handle completion - could navigate to next lesson or back to explore
-              handleBackToExplore();
-            }}
-            onExploreMore={handleBackToExplore}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,21 +77,19 @@ const ExploreLessonsPage: React.FC = () => {
 
       {/* Stats Banner - Non-sticky */}
       <div className="px-4 py-4">
-        {showStats && (
-          <div className="bg-gradient-to-r from-interactive-primary/10 to-success/10 rounded-xl p-4 mb-4 border border-interactive-primary/20">
-            <div className="flex items-center justify-center">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-interactive-primary/20 rounded-full flex items-center justify-center">
-                  <Trophy size={20} className="text-interactive-primary" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-bold text-primary">Welcome to Web3 Learning!</p>
-                  <p className="text-xs text-secondary">Start your journey with these curated lessons</p>
-                </div>
+        <div className="bg-gradient-to-r from-interactive-primary/10 to-success/10 rounded-xl p-4 mb-4 border border-interactive-primary/20">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-interactive-primary/20 rounded-full flex items-center justify-center">
+                <Trophy size={20} className="text-interactive-primary" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-primary">Welcome to Web3 Learning!</p>
+                <p className="text-xs text-secondary">Start your journey with these curated lessons</p>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Lessons Grid - Mobile-first */}
