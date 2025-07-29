@@ -43,7 +43,9 @@ const LessonCollectionPage: React.FC = () => {
     updateMetaTag('og:type', 'article', true);
     updateMetaTag('og:url', window.location.href, true);
     updateMetaTag('og:site_name', 'Sokushuu', true);
-    updateMetaTag('og:image', `https://sokushuu.de/api/og/lesson/${lesson.id}`, true);
+    // TODO: Implement dynamic OG image generation for each lesson collection page
+    // For now, using the same OG image as the main landing page
+    updateMetaTag('og:image', 'https://launchpad-dev-r2.sokushuu.de/og_image%20(1).png', true);
     updateMetaTag('og:image:width', '1200', true);
     updateMetaTag('og:image:height', '630', true);
     
@@ -52,7 +54,9 @@ const LessonCollectionPage: React.FC = () => {
     updateMetaTag('twitter:site', '@sokushuu_de');
     updateMetaTag('twitter:title', `${lesson.title} | Sokushuu`);
     updateMetaTag('twitter:description', lesson.description);
-    updateMetaTag('twitter:image', `https://sokushuu.de/api/og/lesson/${lesson.id}`);
+    // TODO: Implement dynamic Twitter image generation for each lesson collection page
+    // For now, using the same image as the main landing page
+    updateMetaTag('twitter:image', 'https://launchpad-dev-r2.sokushuu.de/og_image%20(1).png');
     
     // Additional meta tags
     updateMetaTag('description', lesson.description);
