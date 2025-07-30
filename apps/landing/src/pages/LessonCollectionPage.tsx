@@ -22,46 +22,12 @@ const LessonCollectionPage: React.FC = () => {
       return;
     }
 
-    // Set document title and meta tags for OG sharing
+    // Set document title (this works for browser tabs)
     document.title = `${lesson.title} | Sokushuu - Learn Web3`;
     
-    // Update or create meta tags
-    const updateMetaTag = (name: string, content: string, property?: boolean) => {
-      const attribute = property ? 'property' : 'name';
-      let metaTag = document.querySelector(`meta[${attribute}="${name}"]`);
-      if (!metaTag) {
-        metaTag = document.createElement('meta');
-        metaTag.setAttribute(attribute, name);
-        document.head.appendChild(metaTag);
-      }
-      metaTag.setAttribute('content', content);
-    };
-
-    // OG Meta Tags
-    updateMetaTag('og:title', `${lesson.title} | Sokushuu`, true);
-    updateMetaTag('og:description', lesson.description, true);
-    updateMetaTag('og:type', 'article', true);
-    updateMetaTag('og:url', window.location.href, true);
-    updateMetaTag('og:site_name', 'Sokushuu', true);
-    // TODO: Implement dynamic OG image generation for each lesson collection page
-    // For now, using the same OG image as the main landing page
-    updateMetaTag('og:image', 'https://launchpad-dev-r2.sokushuu.de/og_image%20(1).png', true);
-    updateMetaTag('og:image:width', '1200', true);
-    updateMetaTag('og:image:height', '630', true);
-    
-    // Twitter Cards
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:site', '@sokushuu_de');
-    updateMetaTag('twitter:title', `${lesson.title} | Sokushuu`);
-    updateMetaTag('twitter:description', lesson.description);
-    // TODO: Implement dynamic Twitter image generation for each lesson collection page
-    // For now, using the same image as the main landing page
-    updateMetaTag('twitter:image', 'https://launchpad-dev-r2.sokushuu.de/og_image%20(1).png');
-    
-    // Additional meta tags
-    updateMetaTag('description', lesson.description);
-    updateMetaTag('keywords', `Web3, ${lesson.category}, ${lesson.tags.join(', ')}, Learning, Education`);
-    updateMetaTag('author', lesson.author);
+    // Note: Dynamic meta tag updates don't work for social media crawlers
+    // since they don't execute JavaScript. For proper OG tag support,
+    // we need server-side rendering or edge functions.
 
     // Analytics: Track lesson page view
     posthog?.capture('lesson_page_viewed', {
