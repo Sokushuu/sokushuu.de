@@ -6,8 +6,7 @@ import type { LearningState, MobileLearningFlowProps } from '../types';
 
 export const MobileLearningFlow: React.FC<MobileLearningFlowProps> = ({ 
   lesson, 
-  onStartLearning,
-  onExploreMore
+  onStartLearning
 }) => {
   const navigate = useNavigate();
   const posthog = usePostHog();
@@ -250,14 +249,8 @@ Try it yourself: ${lessonUrl}`;
     setStartTime(0);
     setQuestionStartTime(0);
     setAttemptCount(1);
-    
-    // Call parent callback to reset selected lesson
-    if (onExploreMore) {
-      onExploreMore();
-    } else {
-      // Fallback navigation if no callback provided
-      navigate('/explore');
-    }
+
+    navigate('/explore');
   };
 
 

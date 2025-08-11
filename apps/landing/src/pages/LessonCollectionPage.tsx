@@ -195,7 +195,6 @@ const LessonCollectionPage: React.FC = () => {
           <MobileLearningFlow
             lesson={lesson}
             onComplete={handleBackToCollection}
-            onExploreMore={handleBackToCollection}
           />
         </div>
 
