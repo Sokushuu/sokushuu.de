@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export const FAQSection: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndices, setOpenIndices] = useState<number[]>([]);
 
   const faqs = [
     {
@@ -44,23 +44,29 @@ export const FAQSection: React.FC = () => {
             <div key={index} className="border-2 border-primary rounded-lg overflow-hidden bg-secondary">
               <button
                 className="w-full px-6 py-4 text-left font-bold text-lg hover:bg-muted transition-colors flex justify-between items-center text-primary"
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                onClick={() => {
+                  if (openIndices.includes(index)) {
+                    setOpenIndices(openIndices.filter(i => i !== index));
+                  } else {
+                    setOpenIndices([...openIndices, index]);
+                  }
+                }}
               >
                 {faq.question}
                 <ChevronDown 
                   size={24} 
-                  className={`transition-transform duration-300 ${openIndex === index ? 'rotate-180' : 'rotate-0'}`}
+                  className={`transition-transform duration-300 ${openIndices.includes(index) ? 'rotate-180' : 'rotate-0'}`}
                 />
               </button>
               <div 
                 className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  openIndex === index 
+                  openIndices.includes(index)
                     ? 'max-h-96 opacity-100 border-t-2 border-primary' 
                     : 'max-h-0 opacity-0 border-t-0'
                 }`}
               >
                 <div className={`px-6 bg-muted transition-all duration-500 ease-in-out ${
-                  openIndex === index ? 'py-4' : 'py-0'
+                  openIndices.includes(index) ? 'py-4' : 'py-0'
                 }`}>
                   <p className="text-secondary leading-relaxed">{faq.answer}</p>
                 </div>
