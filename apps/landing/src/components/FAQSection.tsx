@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export const FAQSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -47,13 +47,24 @@ export const FAQSection: React.FC = () => {
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
                 {faq.question}
-                {openIndex === index ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                <ChevronDown 
+                  size={24} 
+                  className={`transition-transform duration-300 ${openIndex === index ? 'rotate-180' : 'rotate-0'}`}
+                />
               </button>
-              {openIndex === index && (
-                <div className="px-6 py-4 bg-muted border-t-2 border-primary">
+              <div 
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                  openIndex === index 
+                    ? 'max-h-96 opacity-100 border-t-2 border-primary' 
+                    : 'max-h-0 opacity-0 border-t-0'
+                }`}
+              >
+                <div className={`px-6 bg-muted transition-all duration-500 ease-in-out ${
+                  openIndex === index ? 'py-4' : 'py-0'
+                }`}>
                   <p className="text-secondary leading-relaxed">{faq.answer}</p>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
